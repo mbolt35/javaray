@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+    default-autowire="constructor">
+
+    <!-- <bean id="log4jConfigurer" class="org.apache.log4j.BasicConfigurator" init-method="configure"/>-->
+
+    <bean id="configurationProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:javaray-config.properties"/>
+    </bean>
+
+    <bean id="javaRayConfiguration" class="com.mattbolt.javaray.util.JavaRayConfiguration">
+        <constructor-arg index="0" value="${world.width}" type="int"/>
+        <constructor-arg index="1" value="${world.height}" type="int"/>
+        <constructor-arg index="2" value="${renderer.view.width}" type="int"/>
+        <constructor-arg index="3" value="${renderer.view.height}" type="int"/>
+        <constructor-arg index="4" value="${renderer.antialias}" type="int"/>
+        <constructor-arg index="5" value="${renderer.threadpool.size}" type="int"/>
+    </bean>
+
+</beans>
