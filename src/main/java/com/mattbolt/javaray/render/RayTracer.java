@@ -123,40 +123,13 @@ public class RayTracer {
         intensity.scale(1.0 / totalDistance);
 
         /*
-
-        if (closeObj->specular[0] > 0 || closeObj->specular[1] > 0 || closeObj->specular[2] > 0) {
-            vl_unitvec3(closeObj->normal, unitNorm);
-            vl_unitvec3(dir, distance);
-            vl_reflect3(distance, unitNorm, reflectdir);
-
-            if (total_dist >= 0 && total_dist < 30) {
-                ray_trace(objs, closeObj->hitloc, reflectdir, intense, total_dist, closeObj);
-
-                if (closeObj->objtype == TILED_PLANE) {
-                    specular_plane(closeObj, spec);
-                } else {
-                    spec[0] = closeObj->specular[0];
-                    spec[1] = closeObj->specular[1];
-                    spec[2] = closeObj->specular[2];
-                }
-
-                if (closeObj->specular[0] > 0) {
-                    specular[0] = spec[0]*intense[0];
-                }
-
-                if (closeObj->specular[1] > 0) {
-                    specular[1] = spec[1]*intense[1];
-                }
-
-                if (closeObj->specular[2] > 0) {
-                    specular[2] = spec[2]*intense[2];
-                }
-            }
-
-            //specular = closeObj->specular*ray_trace(objs, closeObj->hitloc, reflectdir, total_dist, closeObj);
-        }
-
-        vl_sum3(specular, intensity, intensity);
+            1. Check closeObject specular properties
+            2. Unit Vector normal
+            3. Unit Vector direction
+            4. Angle of Reflection distance along normal
+            5. check total distance for something reasonable (0 - 50?)
+            6. multiply specular * intensity
+            7. add specular back to composite data
         */
 
         return intensity;
