@@ -58,7 +58,7 @@ public class JavaRay {
         Camera camera = new Camera(new Vector3(4, 3, 3));
 
         Scene scene = new Scene(configuration);
-        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(2, 2, 2, 5, 5, 5), 2) );
+        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 2, 0, 0, 5), 2) );
         scene.add( new Sphere(new Vector3(2, 5, -3), newMat(2, 0, 0, 5, 0, 0), 1) );
         scene.add( new Sphere(new Vector3(6, 5, -3), newMat(0, 2, 0, 0, 5, 0), 1) );
         scene.add( new Light(new Vector3(2, 1, 10), 3, 1) );
