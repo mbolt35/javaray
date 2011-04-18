@@ -58,19 +58,19 @@ public class JavaRay {
         Camera camera = new Camera(new Vector3(4, 3, 3));
 
         Scene scene = new Scene(configuration);
-        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 2, 0, 0, 5), 2) );
-        scene.add( new Sphere(new Vector3(2, 5, -3), newMat(2, 0, 0, 5, 0, 0), 1) );
-        scene.add( new Sphere(new Vector3(6, 5, -3), newMat(0, 2, 0, 0, 5, 0), 1) );
-        scene.add( new Light(new Vector3(2, 1, 10), 3, 1) );
-        scene.add( new Light(new Vector3(6, 1, 10), 3, 1) );
+        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 0, 6, 6, 6, 10, 10, 10), 2) );
+        scene.add( new Sphere(new Vector3(2, 4, -2), newMat(2, 0, 0, 5, 0, 0, 0, 0, 2), 1) );
+        scene.add( new Sphere(new Vector3(6, 4, -2), newMat(0, 2, 0, 0, 5, 0, 0, 2, 0), 1) );
+        scene.add( new Light(new Vector3(4, 3, 10), 5, 1) );
+        //scene.add( new Light(new Vector3(6, 1, 10), 3, 1) );
 
         new RayTracer(configuration).render(scene, view, camera);
     }
 
-    private static Material newMat(int ar, int ag, int ab, int dr, int dg, int db) {
+    private static Material newMat(int ar, int ag, int ab, int dr, int dg, int db, int sr, int sg, int sb) {
         return new Material(
             new Color(ar, ag, ab),
             new Color(dr, dg, db),
-            new Color(0, 0, 0));
+            new Color(sr, sg, sb));
     }
 }

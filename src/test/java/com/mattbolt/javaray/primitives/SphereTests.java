@@ -52,6 +52,6 @@ public class SphereTests {
         Vector3 dir = Vector3.subtract(ptBehind, eyePt);
         dir.normalize();
 
-        assert( sphere.getGeometry().hits(new Ray(eyePt, dir)).hitPoint != null );
+        assert( sphere.getGeometry().hits(new Ray(eyePt, dir)).getHitPoint() != null );
     }
 }

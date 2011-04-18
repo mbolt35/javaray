@@ -19,8 +19,6 @@
 
 package com.mattbolt.javaray.geom;
 
-import com.mattbolt.javaray.primitives.SceneObject;
-
 /**
  * This interface defines the implementation prototype for an object that calculates the geometrical properties of an
  * renderable object.
@@ -39,22 +37,29 @@ public interface Geometry {
     HitResult hits(Ray ray);
 
     /**
-     *
-     * @param position
-     * @param sceneObject
+     * This method finds
+     * @param
      */
-    void normal(Vector3 position, SceneObject sceneObject);
+    Vector3 normalTo(Vector3 point);
 
     /**
      * This class is used to represent a hit result.
      */
-    class HitResult {
-        public final double t;
-        public final Vector3 hitPoint;
+    final class HitResult {
+        private final double t;
+        private final Vector3 hitPoint;
 
         public HitResult(double t, Vector3 hitPoint) {
             this.t = t;
             this.hitPoint = hitPoint;
+        }
+
+        public double getT() {
+            return t;
+        }
+
+        public Vector3 getHitPoint() {
+            return null != hitPoint ? new Vector3(hitPoint) : null;
         }
     }
 }

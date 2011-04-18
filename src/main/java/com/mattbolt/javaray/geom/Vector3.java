@@ -234,22 +234,40 @@ public class Vector3 {
         return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
     }
 
+    public static Vector3 reflection(Vector3 v1, Vector3 v2) {
+        Vector3 newV1 = new Vector3(v1);
+        Vector3 newV2 = new Vector3(v2);
+
+        newV1.normalize();
+        newV1.scale(-1.0);
+
+        newV2.normalize();
+
+        double uDotN = Vector3.dotProduct(newV1, newV2);
+        newV2.scale(2.0 * uDotN);
+
+        return Vector3.subtract(newV2, newV1);
+    }
+
     public static Vector3 origin() {
         return new Vector3(0.0, 0.0, 0.0);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vector3)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Vector3)) {
+            return false;
+        }
 
         Vector3 vector3 = (Vector3) o;
 
-        if (Double.compare(vector3.x, x) != 0) return false;
-        if (Double.compare(vector3.y, y) != 0) return false;
-        if (Double.compare(vector3.z, z) != 0) return false;
-
-        return true;
+        return Double.compare(vector3.x, x) == 0
+            && Double.compare(vector3.y, y) == 0
+            && Double.compare(vector3.z, z) == 0;
     }
 
     @Override

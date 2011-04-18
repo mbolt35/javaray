@@ -26,7 +26,7 @@ import com.mattbolt.javaray.geom.Vector3;
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class Camera {
+public final class Camera {
 
     private final Vector3 position;
 
@@ -35,10 +35,10 @@ public class Camera {
     }
 
     public Camera(Vector3 position) {
-        this.position = position;
+        this.position = new Vector3(position);
     }
 
     public Vector3 getPosition() {
-        return position;
+        return new Vector3(position);
     }
 }

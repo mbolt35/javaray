@@ -60,4 +60,32 @@ public abstract class AbstractPrimitive {
         Color emissivity = material.getEmissivity();
         return emissivity.getRed() > 0 || emissivity.getGreen() > 0 || emissivity.getBlue() > 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof AbstractPrimitive)) {
+            return false;
+        }
+
+        AbstractPrimitive that = (AbstractPrimitive) o;
+
+        return !(lastHitPoint != null ? !lastHitPoint.equals(that.lastHitPoint) : that.lastHitPoint != null)
+            && !(lastNormal != null ? !lastNormal.equals(that.lastNormal) : that.lastNormal != null)
+            && !(material != null ? !material.equals(that.material) : that.material != null)
+            && !(position != null ? !position.equals(that.position) : that.position != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = position != null ? position.hashCode() : 0;
+        result = 31 * result + (material != null ? material.hashCode() : 0);
+        result = 31 * result + (lastHitPoint != null ? lastHitPoint.hashCode() : 0);
+        result = 31 * result + (lastNormal != null ? lastNormal.hashCode() : 0);
+        return result;
+    }
 }

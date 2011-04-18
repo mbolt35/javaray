@@ -19,8 +19,21 @@
 
 package com.mattbolt.javaray.primitives;
 
+import com.mattbolt.javaray.geom.Geometry;
+import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.render.Material;
+
 /**
  *
  */
-public class Plane {
+public class Plane extends AbstractPrimitive implements SceneObject {
+
+    public Plane(Vector3 position, Material material) {
+        super(position, material);
+    }
+
+    @Override
+    public Geometry getGeometry() {
+        return null;
+    }
 }

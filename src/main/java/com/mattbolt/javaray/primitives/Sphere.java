@@ -45,6 +45,9 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
         return geometry;
     }
 
+    /**
+     * This class is used to represent a sphere geometrically.
+     */
     public static class SphereGeometry implements Geometry {
         private final Vector3 position;
         private final int radius;
@@ -101,11 +104,10 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
         }
 
         @Override
-        public void normal(Vector3 position, SceneObject sceneObject) {
-            Vector3 normal = Vector3.subtract(sceneObject.getLastHitPoint(), position);
+        public Vector3 normalTo(Vector3 point) {
+            Vector3 normal = Vector3.subtract(point, position);
             normal.normalize();
-
-            sceneObject.getLastNormal().copyFrom(normal);
+            return normal;
         }
     }
 }
