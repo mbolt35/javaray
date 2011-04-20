@@ -20,61 +20,48 @@
 package com.mattbolt.javaray.primitives;
 
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
 
-import java.awt.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
  */
 public abstract class AbstractPrimitive {
-    protected Vector3 position;
-    protected Material material;
-    protected Vector3 lastHitPoint;
-    protected Vector3 lastNormal;
+    private static final AtomicLong idFactory = new AtomicLong();
+
+    protected final long id;
+    protected final Vector3 position;
+    protected final Material material;
 
     public AbstractPrimitive(Vector3 position, Material material) {
+        this.id = idFactory.incrementAndGet();
         this.position = position;
         this.material = material;
-        this.lastHitPoint = new Vector3();
-        this.lastNormal = new Vector3();
     }
 
     public Vector3 getPosition() {
-        return position;
+        return new Vector3(position);
     }
 
     public Material getMaterial() {
         return material;
     }
 
-    public Vector3 getLastHitPoint() {
-        return lastHitPoint;
-    }
-
-    public Vector3 getLastNormal() {
-        return lastNormal;
-    }
-
     public boolean isEmittingLight() {
-        Color emissivity = material.getEmissivity();
+        ColorMagnitude emissivity = material.getEmissivity();
         return emissivity.getRed() > 0 || emissivity.getGreen() > 0 || emissivity.getBlue() > 0;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof AbstractPrimitive)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof AbstractPrimitive)) return false;
 
         AbstractPrimitive that = (AbstractPrimitive) o;
 
-        return !(lastHitPoint != null ? !lastHitPoint.equals(that.lastHitPoint) : that.lastHitPoint != null)
-            && !(lastNormal != null ? !lastNormal.equals(that.lastNormal) : that.lastNormal != null)
+        return id == that.id
             && !(material != null ? !material.equals(that.material) : that.material != null)
             && !(position != null ? !position.equals(that.position) : that.position != null);
 
@@ -82,10 +69,9 @@ public abstract class AbstractPrimitive {
 
     @Override
     public int hashCode() {
-        int result = position != null ? position.hashCode() : 0;
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (material != null ? material.hashCode() : 0);
-        result = 31 * result + (lastHitPoint != null ? lastHitPoint.hashCode() : 0);
-        result = 31 * result + (lastNormal != null ? lastNormal.hashCode() : 0);
         return result;
     }
 }

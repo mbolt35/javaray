@@ -32,13 +32,15 @@ public class JavaRayConfiguration {
     private final int viewHeight;
     private final int antiAlias;
     private final int threadPoolSize;
+    private final int chunkSize;
 
     public JavaRayConfiguration( int worldWidth,
                                  int worldHeight,
                                  int viewWidth,
                                  int viewHeight,
                                  int antiAlias,
-                                 int threadPoolSize )
+                                 int threadPoolSize,
+                                 int chunkSize )
     {
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
@@ -46,6 +48,7 @@ public class JavaRayConfiguration {
         this.viewHeight = viewHeight;
         this.antiAlias = antiAlias;
         this.threadPoolSize = threadPoolSize;
+        this.chunkSize = chunkSize;
     }
 
     public int getWorldWidth() {
@@ -70,5 +73,9 @@ public class JavaRayConfiguration {
 
     public int getThreadPoolSize() {
         return threadPoolSize;
+    }
+
+    public int getChunkSize() {
+        return chunkSize;
     }
 }

@@ -20,6 +20,7 @@
 package com.mattbolt.javaray.util;
 
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.render.ColorMagnitude;
 
 import java.awt.*;
 
@@ -34,10 +35,14 @@ public final class ColorHelper {
         return new Vector3(color.getRed(), color.getGreen(), color.getBlue());
     }
 
+    public static Vector3 toVector3(ColorMagnitude color) {
+        return new Vector3(color.getRed(), color.getGreen(), color.getBlue());
+    }
+
     public static Color toColor(Vector3 vector) {
         return new Color((int) vector.getX(), (int) vector.getY(), (int) vector.getZ());
     }
-
+    
     public static Color randomColor() {
         return new Color(randomColorValue(), randomColorValue(), randomColorValue());
     }

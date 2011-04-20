@@ -19,7 +19,6 @@
 
 package com.mattbolt.javaray.render;
 
-import java.awt.*;
 
 /**
  * This class contains information pertaining to the material used in the rendering of the shape this material is
@@ -28,38 +27,61 @@ import java.awt.*;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public class Material {
-    private Color ambient;
-    private Color diffuse;
-    private Color specular;
-    private Color emissivity;
+    private ColorMagnitude ambient;
+    private ColorMagnitude diffuse;
+    private ColorMagnitude specular;
+    private ColorMagnitude emissivity;
 
-    public Material(Color emissivity) {
-        this.ambient = new Color(0, 0, 0);
-        this.diffuse = new Color(0, 0, 0);
-        this.specular = new Color(0, 0, 0);
+    public Material(ColorMagnitude emissivity) {
+        this.ambient = new ColorMagnitude(0, 0, 0);
+        this.diffuse = new ColorMagnitude(0, 0, 0);
+        this.specular = new ColorMagnitude(0, 0, 0);
         this.emissivity = emissivity;
     }
 
-    public Material(Color ambient, Color diffuse, Color specular) {
+    public Material(ColorMagnitude ambient, ColorMagnitude diffuse, ColorMagnitude specular) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
-        this.emissivity = new Color(0, 0, 0);
+        this.emissivity = new ColorMagnitude(0, 0, 0);
     }
 
-    public Color getAmbient() {
+    public ColorMagnitude getAmbient() {
         return ambient;
     }
 
-    public Color getDiffuse() {
+    public ColorMagnitude getDiffuse() {
         return diffuse;
     }
 
-    public Color getSpecular() {
+    public ColorMagnitude getSpecular() {
         return specular;
     }
 
-    public Color getEmissivity() {
+    public ColorMagnitude getEmissivity() {
         return emissivity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Material)) return false;
+
+        Material material = (Material) o;
+
+        return !(ambient != null ? !ambient.equals(material.ambient) : material.ambient != null)
+            && !(diffuse != null ? !diffuse.equals(material.diffuse) : material.diffuse != null)
+            && !(emissivity != null ? !emissivity.equals(material.emissivity) : material.emissivity != null)
+            && !(specular != null ? !specular.equals(material.specular) : material.specular != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ambient != null ? ambient.hashCode() : 0;
+        result = 31 * result + (diffuse != null ? diffuse.hashCode() : 0);
+        result = 31 * result + (specular != null ? specular.hashCode() : 0);
+        result = 31 * result + (emissivity != null ? emissivity.hashCode() : 0);
+        return result;
     }
 }

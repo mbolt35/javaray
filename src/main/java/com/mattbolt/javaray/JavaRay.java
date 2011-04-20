@@ -22,7 +22,9 @@ package com.mattbolt.javaray;
 import com.mattbolt.javaray.camera.Camera;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.light.Light;
+import com.mattbolt.javaray.primitives.Plane;
 import com.mattbolt.javaray.primitives.Sphere;
+import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
 import com.mattbolt.javaray.render.RayTracer;
 import com.mattbolt.javaray.render.Scene;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.awt.*;
+import java.util.Date;
 
 /**
  *
@@ -41,6 +43,7 @@ import java.awt.*;
  */
 public class JavaRay {
     private static final Logger logger = LoggerFactory.getLogger(JavaRay.class);
+    
 
     public static void main(String[] args) {
         logger.info( "Starting JavaRay Ray-Tracer by: Matt Bolt [mbolt35@gmail.com]" );
@@ -56,21 +59,68 @@ public class JavaRay {
         });
 
         Camera camera = new Camera(new Vector3(4, 3, 3));
+        Scene scene = getSceneTwo(configuration);
 
+        long t = new Date().getTime();
+
+        try {
+            new RayTracer(configuration).render(scene, view, camera);
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
+
+        logger.debug("Took: {} seconds", ((new Date().getTime() - t) / 1000));
+    }
+
+    private static Scene getSceneOne(JavaRayConfiguration configuration) {
         Scene scene = new Scene(configuration);
-        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 0, 6, 6, 6, 10, 10, 10), 2) );
-        scene.add( new Sphere(new Vector3(2, 4, -2), newMat(2, 0, 0, 5, 0, 0, 0, 0, 2), 1) );
-        scene.add( new Sphere(new Vector3(6, 4, -2), newMat(0, 2, 0, 0, 5, 0, 0, 2, 0), 1) );
+        scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 0, 6, 6, 6, 10, 10, 10), 2.5) );
+        scene.add( new Sphere(new Vector3(2.75, 4, -1), newMat(2, 0, 0, 5, 0, 0, 0, 0, 2), 0.5) );
+        scene.add( new Sphere(new Vector3(5.25, 4, -1), newMat(0, 2, 0, 0, 5, 0, 0, 2, 0), 0.5) );
         scene.add( new Light(new Vector3(4, 3, 10), 5, 1) );
         //scene.add( new Light(new Vector3(6, 1, 10), 3, 1) );
 
-        new RayTracer(configuration).render(scene, view, camera);
+        return scene;
     }
 
-    private static Material newMat(int ar, int ag, int ab, int dr, int dg, int db, int sr, int sg, int sb) {
+    private static Scene getSceneTwo(JavaRayConfiguration configuration) {
+        Scene scene = new Scene(configuration);
+
+        // Lights
+        scene.add( new Light(new Vector3(4, 10, -1), 8, 1) );
+        scene.add( new Light(new Vector3(4, 3, 2), 5, 1) );
+        scene.add( new Light(new Vector3(4, 16, -12), 8, 0.2) );
+        scene.add( new Light(new Vector3(-1, 10, -1), 9, 1) );
+
+        // Planes
+        scene.add( new Plane(new Vector3(1, 0, 1), new Vector3(0, 1, 0), newMat(0, 0, 0, 2, 2, 2, 0.1, 0.1, 0.1)) );
+        scene.add( new Plane(new Vector3(0, 0, -16), new Vector3(0, 0, 1), newMat(0, 0, 0, 6, 6, 6, 0.2, 0.2, 0.2)) );
+
+        // Spheres
+        scene.add( new Sphere(new Vector3(4, 4.1, -10), newMat(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 5.0, 5.0, 5.0), 4.0) );
+        scene.add( new Sphere(new Vector3(2, 7, -2), newMat(0.2, 0.2, 0.2, 2.6, 2.6, 2.6, 0, 0, 0), 1.0) );
+        scene.add( new Sphere(new Vector3(4, 7, -3), newMat(0.2, 0.2, 0.2, 2.6, 2.6, 2.6, 0, 0, 0), 1.0) );
+        scene.add( new Sphere(new Vector3(6, 7, -5), newMat(0.2, 0.2, 0.2, 2.4, 2.4, 2.4, 0, 0, 0), 1.0) );
+        scene.add( new Sphere(new Vector3(2, 1, -2), newMat(0.2, 0.2, 0.2, 2.6, 2.6, 2.6, 0, 0, 0), 1.0) );
+        scene.add( new Sphere(new Vector3(4, 1, -3), newMat(0.2, 0.2, 0.2, 2.4, 2.4, 2.4, 0, 0, 0), 1.0) );
+        scene.add( new Sphere(new Vector3(6, 1, -5), newMat(0.2, 0.2, 0.2, 2.4, 2.4, 2.4, 0, 0, 0), 1.0) );
+
+        return scene;
+    }
+
+    private static Material newMat( double ar,
+                                    double ag,
+                                    double ab,
+                                    double dr,
+                                    double dg,
+                                    double db,
+                                    double sr,
+                                    double sg,
+                                    double sb )
+    {
         return new Material(
-            new Color(ar, ag, ab),
-            new Color(dr, dg, db),
-            new Color(sr, sg, sb));
+            new ColorMagnitude(ar, ag, ab),
+            new ColorMagnitude(dr, dg, db),
+            new ColorMagnitude(sr, sg, sb));
     }
 }

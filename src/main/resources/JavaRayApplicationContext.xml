@@ -25,8 +25,6 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
     default-autowire="constructor">
 
-    <!-- <bean id="log4jConfigurer" class="org.apache.log4j.BasicConfigurator" init-method="configure"/>-->
-
     <bean id="configurationProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:javaray-config.properties"/>
     </bean>
@@ -38,6 +36,7 @@
         <constructor-arg index="3" value="${renderer.view.height}" type="int"/>
         <constructor-arg index="4" value="${renderer.antialias}" type="int"/>
         <constructor-arg index="5" value="${renderer.threadpool.size}" type="int"/>
+        <constructor-arg index="6" value="${renderer.chunks}" type="int"/>
     </bean>
 
 </beans>

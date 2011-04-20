@@ -52,18 +52,4 @@ public interface SceneObject {
      */
     boolean isEmittingLight();
 
-    /**
-     * This last point a collision with a ray occurred.
-     *
-     * @return {@link Vector3} where the hit occurred; otherwise, {@code null}
-     */
-    Vector3 getLastHitPoint();
-
-    /**
-     * The last normal check.
-     *
-     * @return {@link Vector3} normal; otherwise, {@code null}
-     */
-    Vector3 getLastNormal();
-
 }

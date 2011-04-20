@@ -234,19 +234,15 @@ public class Vector3 {
         return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
     }
 
-    public static Vector3 reflection(Vector3 v1, Vector3 v2) {
-        Vector3 newV1 = new Vector3(v1);
-        Vector3 newV2 = new Vector3(v2);
+    public static Vector3 reflection(Vector3 direction, Vector3 normal) {
+        Vector3 norm = new Vector3(normal);
+        norm.normalize();
+        norm.scale(2.0 * Vector3.dotProduct(direction, norm));
 
-        newV1.normalize();
-        newV1.scale(-1.0);
-
-        newV2.normalize();
-
-        double uDotN = Vector3.dotProduct(newV1, newV2);
-        newV2.scale(2.0 * uDotN);
-
-        return Vector3.subtract(newV2, newV1);
+        Vector3 v = Vector3.subtract(direction, norm);
+        v.normalize();
+        
+        return v;
     }
 
     public static Vector3 origin() {

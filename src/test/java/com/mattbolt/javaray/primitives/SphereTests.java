@@ -21,6 +21,7 @@ package com.mattbolt.javaray.primitives;
 
 import com.mattbolt.javaray.geom.Ray;
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import org.junit.Test;
@@ -30,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.awt.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:JavaRayApplicationContext.xml"})
@@ -43,7 +42,7 @@ public class SphereTests {
 
     @Test
     public void sphereHitTest() {
-        Material mat = new Material(new Color(5, 5, 5), new Color(8, 8, 8), new Color(0, 0, 0));
+        Material mat = new Material(new ColorMagnitude(5, 5, 5), new ColorMagnitude(8, 8, 8), new ColorMagnitude(0, 0, 0));
         Sphere sphere = new Sphere(new Vector3(4, 4, -5), mat, 2);
 
         Vector3 eyePt = new Vector3(4, 4, 5);

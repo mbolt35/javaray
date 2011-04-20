@@ -27,6 +27,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class is used as a wrapper for PNG ImageIO. It simply exposes a simple pixel writing method and an image
@@ -36,18 +38,32 @@ import java.io.IOException;
  */
 public class PngImage {
     private static final Logger logger = LoggerFactory.getLogger(PngImage.class);
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final BufferedImage bi;
     private final Graphics2D graphics;
+    private final Color[][] imageMap;
+
+    private final int width;
+    private final int height;
 
     public PngImage(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.imageMap = new Color[width + 1][height + 1];
         this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         this.graphics = bi.createGraphics();
     }
 
     public void setPixelAt(int x, int y, Color color) {
-        graphics.setColor(color);
-        graphics.fillRect(x, y, 1, 1);
+        lock.writeLock().lock();
+        
+        try {
+            graphics.setColor(color);
+            graphics.fillRect(x, height - y, 1, 1);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void createPngImage(String fileName) {

@@ -35,7 +35,7 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
 
     private final Geometry geometry;
 
-    public Sphere(Vector3 position, Material material, int radius) {
+    public Sphere(Vector3 position, Material material, double radius) {
         super(position, material);
         this.geometry = new SphereGeometry(position, radius);
     }
@@ -45,17 +45,39 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
         return geometry;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder("Sphere[").append(id).append("]").toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Sphere)) return false;
+        if (!super.equals(o)) return false;
+
+        Sphere sphere = (Sphere) o;
+
+        return !(geometry != null ? !geometry.equals(sphere.geometry) : sphere.geometry != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (geometry != null ? geometry.hashCode() : 0);
+        return result;
+    }
+
     /**
      * This class is used to represent a sphere geometrically.
      */
     public static class SphereGeometry implements Geometry {
         private final Vector3 position;
-        private final int radius;
         private final double radiusSquared;
 
-        public SphereGeometry(Vector3 position, int radius) {
+        public SphereGeometry(Vector3 position, double radius) {
             this.position = position.copy();
-            this.radius = radius;
             this.radiusSquared = Math.pow(radius, 2.0);
         }
 
@@ -80,9 +102,7 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
                 double t2 = (-b + sqrtDisc) / (2.0 * a);
 
                 // Choose the closest point
-                if (t > t2) {
-                    t = t2;
-                }
+                t = Math.min(t, t2);
 
                 hitLocation.copyFrom(hitsSphere(ray.getPosition(), direction, t));
 
@@ -97,7 +117,8 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
         }
 
         private Vector3 hitsSphere(Vector3 base, Vector3 direction, double t) {
-            Vector3 d = direction.copy();
+            Vector3 d = new Vector3(direction);
+            d.normalize();
             d.scale(t);
 
             return Vector3.add(base, d);
@@ -108,6 +129,28 @@ public class Sphere extends AbstractPrimitive implements SceneObject {
             Vector3 normal = Vector3.subtract(point, position);
             normal.normalize();
             return normal;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SphereGeometry)) return false;
+
+            SphereGeometry that = (SphereGeometry) o;
+
+            return Double.compare(that.radiusSquared, radiusSquared) == 0
+                && !(position != null ? !position.equals(that.position) : that.position != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            result = position != null ? position.hashCode() : 0;
+            temp = radiusSquared != +0.0d ? Double.doubleToLongBits(radiusSquared) : 0L;
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            return result;
         }
     }
 }
