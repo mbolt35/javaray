@@ -19,18 +19,16 @@
 
 package com.mattbolt.javaray.util;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.imageio.ImageIO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a wrapper for PNG ImageIO. It simply exposes a simple pixel writing method and an image
@@ -45,7 +43,6 @@ public class PngImage {
     private AtomicBoolean accepting = new AtomicBoolean(true);
     private final BufferedImage bi;
     private final Graphics2D graphics;
-    private final Color[][] imageMap;
 
     private final int width;
     private final int height;
@@ -53,10 +50,11 @@ public class PngImage {
     public PngImage(int width, int height) {
         this.width = width;
         this.height = height;
-        this.imageMap = new Color[width + 1][height + 1];
         this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         this.graphics = bi.createGraphics();
+
         Thread t = new Thread(new Runnable() {
+            @Override
         	public void run() {
         		try {
         			while(accepting.get()) {
@@ -70,6 +68,7 @@ public class PngImage {
         		}
         	}
         });
+        
         t.start();
     }
 
@@ -84,6 +83,7 @@ public class PngImage {
     		this.color = color;
     	}
     }
+
     public void setPixelAt(int x, int y, Color color) {
         pixels.add(new Pixel(x, y, color));
     }
@@ -99,7 +99,7 @@ public class PngImage {
             File file = new File(fileName);
 
             if (file.exists()) {
-                file.delete();
+                boolean fileDeleted = file.delete();
             }
 
             ImageIO.write(bi, "PNG", file);
