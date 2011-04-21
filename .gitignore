@@ -30,3 +30,6 @@ Thumbs.db
 *.project
 *.settings
 *.as3proj
+*.classpath
+
+target
