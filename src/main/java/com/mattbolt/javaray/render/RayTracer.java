@@ -59,6 +59,32 @@ public class RayTracer {
         imageSegments = JavaRayExecutorFactory.newFixedThreadPool(configuration.getThreadPoolSize());
     }
 
+    public void synchronousRender(Scene scene, View view, Camera camera) {
+        final PngImage pngImage = new PngImage(view.getWidth(), view.getHeight());
+
+        Rectangle rect = new Rectangle(0, 0, view.getWidth(), view.getHeight());
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        imageSegments.submit( new ImageSegmentWorker(scene, view, camera, pngImage, rect, totalSamples, new GenericCallback() {
+            @Override
+            public void onComplete() {
+                latch.countDown();
+                logger.debug("count: {}", latch.getCount());
+            }
+        }) );
+
+        try {
+            latch.await();
+
+            pngImage.createPngImage("test.png");
+        } catch (InterruptedException e) {
+            logger.error(e.getStackTrace().toString());
+        }
+
+        logger.debug("Finished!");
+        imageSegments.shutdown();
+    }
+
     public void render(Scene scene, View view, Camera camera) {
         final PngImage pngImage = new PngImage(view.getWidth(), view.getHeight());
 
@@ -110,9 +136,6 @@ public class RayTracer {
         private final Rectangle renderRect;
         private final double sizeX, sizeY;
         private final int totalSamples;
-
-        private final Map<SceneObject, Vector3> hitMap = new HashMap<SceneObject, Vector3>();
-        private final Map<SceneObject, Vector3> normalMap = new HashMap<SceneObject, Vector3>();
 
         private final GenericCallback callback;
 
@@ -187,6 +210,7 @@ public class RayTracer {
                                   double totalDistance,
                                   SceneObject lastHit )
         {
+            Map<SceneObject, Vector3> hitMap = new HashMap<SceneObject, Vector3>();
             double min = Double.MAX_VALUE;
             
             SceneObject closeObject = null;
@@ -196,11 +220,11 @@ public class RayTracer {
             for (SceneObject object : objects) {
                 if (!object.equals(lastHit)) {
                     Geometry objectGeometry = object.getGeometry();
-                    Vector3 hitPoint = objectGeometry.hits(ray).getHitPoint();
+                    Geometry.HitResult result = objectGeometry.hits(ray);
+                    Vector3 hitPoint = result.getHitPoint();
 
-                    if (null != hitPoint) {
+                    if (result.getT() > 0) {
                         hitMap.put(object, hitPoint);
-                        normalMap.put(object, objectGeometry.normalTo(hitPoint));
 
                         Vector3 temp = Vector3.subtract(hitPoint, ray.getPosition());
                         if (temp.getLength() < min) {
@@ -225,24 +249,24 @@ public class RayTracer {
             }
 
             Vector3 ambient = ColorHelper.toVector3(closeObject.getMaterial().getAmbient());
-            Vector3 diffuse = diffuseFor(objects, closeObject);
+            Vector3 diffuse = diffuseFor(objects, closeObject, hitMap.get(closeObject));
 
             intensity.add(Vector3.add(ambient, diffuse));
             intensity.scale(1.0 / totalDistance);
 
             // Now, we can determine specular intensity
-            intensity.add(specularFor(objects, closeObject, direction, totalDistance));
+            intensity.add(specularFor(objects, closeObject, hitMap.get(closeObject), ray.getDirection(), totalDistance));
 
             return intensity;
         }
 
-        private Vector3 diffuseFor(List<SceneObject> objects, SceneObject hitObject) {
+        private Vector3 diffuseFor(List<SceneObject> objects, SceneObject hitObject, Vector3 hitPoint) {
             Vector3 diffuse = new Vector3();
 
             for (SceneObject object : objects) {
                 if (object.isEmittingLight()) {
                     // Find the vector between the center of the object and the hit point
-                    Vector3 direction = Vector3.subtract(object.getPosition(), hitMap.get(hitObject));
+                    Vector3 direction = Vector3.subtract(object.getPosition(), hitPoint);
 
                     // Get the distance (for amount of intensity to use)
                     double distance = direction.getLength();
@@ -250,8 +274,8 @@ public class RayTracer {
                     // Normalize *after* getting the length
                     direction.normalize();
 
-                    if (isLightVisible(objects, hitObject, object, distance)) {
-                        double cos = Vector3.dotProduct(direction, normalMap.get(hitObject));
+                    if (isLightVisible(objects, hitObject, hitPoint, object, distance)) {
+                        double cos = Vector3.dotProduct(direction, hitObject.getGeometry().normalTo(hitPoint));
 
                         if (cos > 0) {
                             ColorMagnitude diff = hitObject.getMaterial().getDiffuse();
@@ -271,53 +295,48 @@ public class RayTracer {
 
         private Vector3 specularFor( List<SceneObject> objects,
                                      SceneObject closeObject,
+                                     Vector3 hitPoint,
                                      Vector3 direction,
                                      double totalDistance )
         {
             ColorMagnitude spec = closeObject.getMaterial().getSpecular();
-            Vector3 specularIntensity = new Vector3();
 
             if (spec.getRed() > 0 || spec.getGreen() > 0 || spec.getBlue() > 0) {
-                Vector3 normal = new Vector3( normalMap.get(closeObject) );
-                normal.normalize();
-
-                Vector3 dir = new Vector3( direction );
-                dir.normalize();
-
-                Vector3 reflect = Vector3.reflection(dir, normal);
+                Vector3 normal = closeObject.getGeometry().normalTo(hitPoint);
+                Vector3 reflect = Vector3.reflection(direction, normal);
 
                 if (totalDistance >= 0 && totalDistance < 30) {
                     Vector3 specular = rayTrace(
                         objects,
-                        hitMap.get(closeObject),
+                        hitPoint,
                         reflect,
                         totalDistance,
                         closeObject );
 
-                    specularIntensity.add(
+                    return new Vector3(
                         specular.getX() * spec.getRed(),
                         specular.getY() * spec.getGreen(),
                         specular.getZ() * spec.getBlue() );
                 }
             }
 
-            return specularIntensity;
+            return new Vector3();
         }
 
         private boolean isLightVisible( List<SceneObject> objects,
                                         SceneObject hitObject,
+                                        Vector3 hitPoint,
                                         SceneObject lightSource,
                                         double distance )
         {
-            Vector3 difference = Vector3.subtract(lightSource.getPosition(), hitMap.get(hitObject));
+            Vector3 difference = Vector3.subtract(lightSource.getPosition(), hitPoint);
+            difference.normalize();
+
+            Ray ray = new Ray(hitPoint, difference);
 
             for (SceneObject object : objects) {
                 if (!object.equals(hitObject) && !object.equals(lightSource)) {
-                    Vector3 unitDifference = new Vector3(difference);
-                    unitDifference.normalize();
-
-                    Geometry.HitResult result = object.getGeometry().hits(
-                        new Ray(hitMap.get(hitObject), unitDifference));
+                    Geometry.HitResult result = object.getGeometry().hits(ray);
 
                     if (result.getT() > 0 && result.getT() <= distance) {
                         return false;

@@ -26,7 +26,10 @@ import com.mattbolt.javaray.render.Material;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * This abstract class should be used to as a base class for a primitive shape. It provides the basic getter/setter methods
+ * for position, materials, and lights.
  *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public abstract class AbstractPrimitive {
     private static final AtomicLong idFactory = new AtomicLong();
@@ -42,7 +45,7 @@ public abstract class AbstractPrimitive {
     }
 
     public Vector3 getPosition() {
-        return new Vector3(position);
+        return position;
     }
 
     public Material getMaterial() {

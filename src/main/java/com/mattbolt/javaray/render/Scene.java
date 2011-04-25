@@ -50,10 +50,6 @@ public class Scene {
         return sceneObjects;
     }
 
-    public int size() {
-        return sceneObjects.size();
-    }
-
     public int getWorldWidth() {
         return worldWidth;
     }

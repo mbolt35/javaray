@@ -31,7 +31,11 @@ import com.mattbolt.javaray.render.Material;
 public class Light extends Sphere implements SceneObject {
 
     public Light(Vector3 position, double intensity, double radius) {
-        super(position, new Material(new ColorMagnitude(intensity, intensity, intensity)), radius);
+        this(position, new ColorMagnitude(intensity, intensity, intensity), radius);
+    }
+    
+    public Light(Vector3 position, ColorMagnitude emissivity, double radius) {
+        super(position, new Material(emissivity), radius);
     }
 
     @Override

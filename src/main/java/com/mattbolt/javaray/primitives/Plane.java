@@ -105,18 +105,18 @@ public class Plane extends AbstractPrimitive implements SceneObject {
 
         @Override
         public Vector3 normalTo(Vector3 point) {
-            /*
-            double zero[3] = {0,0,0};
-
-	        vl_sum3(obj->plane->normal, zero, obj->normal);
-             */
             return planeNormal;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof PlaneGeometry)) return false;
+            if (this == o) {
+                return true;
+            }
+            
+            if (!(o instanceof PlaneGeometry)) {
+                return false;
+            }
 
             PlaneGeometry that = (PlaneGeometry) o;
 

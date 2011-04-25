@@ -51,7 +51,7 @@ public interface Geometry {
 
         public HitResult(double t, Vector3 hitPoint) {
             this.t = t;
-            this.hitPoint = hitPoint;
+            this.hitPoint = hitPoint != null ? new Vector3(hitPoint) : null;
         }
 
         public double getT() {

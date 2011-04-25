@@ -93,16 +93,6 @@ public class Vector3 {
     }
 
     /**
-     * This method copies the values from the {@code source} parameter into this instance.
-     * @param source
-     */
-    public void copyFrom(Vector3 source) {
-        x = source.x;
-        y = source.y;
-        z = source.z;
-    }
-
-    /**
      * This method creates a new {@code Vector3} instance containing identical data.
      *
      * @return A new {@code Vector3} instance containing the same x, y, and z values.
@@ -241,7 +231,7 @@ public class Vector3 {
 
         Vector3 v = Vector3.subtract(direction, norm);
         v.normalize();
-        
+
         return v;
     }
 

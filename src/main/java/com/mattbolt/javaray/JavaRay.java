@@ -22,6 +22,7 @@ package com.mattbolt.javaray;
 import com.mattbolt.javaray.camera.Camera;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.light.Light;
+import com.mattbolt.javaray.light.SpotLight;
 import com.mattbolt.javaray.primitives.Plane;
 import com.mattbolt.javaray.primitives.Sphere;
 import com.mattbolt.javaray.render.ColorMagnitude;
@@ -59,25 +60,24 @@ public class JavaRay {
         });
 
         Camera camera = new Camera(new Vector3(4, 3, 3));
-        Scene scene = getSceneTwo(configuration);
+        Scene scene = getSceneThree(configuration);
 
         long t = new Date().getTime();
 
-        try {
-            new RayTracer(configuration).render(scene, view, camera);
-        } catch (Exception e) {
-            logger.error("Error", e);
-        }
+        //new RayTracer(configuration).synchronousRender(scene, view, camera);
+
+        new RayTracer(configuration).render(scene, view, camera);
 
         logger.debug("Took: {} seconds", ((new Date().getTime() - t) / 1000));
     }
 
     private static Scene getSceneOne(JavaRayConfiguration configuration) {
         Scene scene = new Scene(configuration);
+        scene.add( new Light(new Vector3(4, 3, 10), 5, 1) );
         scene.add( new Sphere(new Vector3(4, 3, -5), newMat(0, 0, 0, 6, 6, 6, 10, 10, 10), 2.5) );
         scene.add( new Sphere(new Vector3(2.75, 4, -1), newMat(2, 0, 0, 5, 0, 0, 0, 0, 2), 0.5) );
         scene.add( new Sphere(new Vector3(5.25, 4, -1), newMat(0, 2, 0, 0, 5, 0, 0, 2, 0), 0.5) );
-        scene.add( new Light(new Vector3(4, 3, 10), 5, 1) );
+        //scene.add( new Sphere(new Vector3(4, 1, -1), newMat(0, 0, 2, 0, 0, 5, 0, 0, 5), 0.5) );
         //scene.add( new Light(new Vector3(6, 1, 10), 3, 1) );
 
         return scene;
@@ -104,6 +104,27 @@ public class JavaRay {
         scene.add( new Sphere(new Vector3(2, 1, -2), newMat(0.2, 0.2, 0.2, 2.6, 2.6, 2.6, 0, 0, 0), 1.0) );
         scene.add( new Sphere(new Vector3(4, 1, -3), newMat(0.2, 0.2, 0.2, 2.4, 2.4, 2.4, 0, 0, 0), 1.0) );
         scene.add( new Sphere(new Vector3(6, 1, -5), newMat(0.2, 0.2, 0.2, 2.4, 2.4, 2.4, 0, 0, 0), 1.0) );
+
+        return scene;
+    }
+
+    private static Scene getSceneThree(JavaRayConfiguration configuration) {
+        Scene scene = new Scene(configuration);
+
+        // Lights
+        //scene.add( new Light(new Vector3(4, 16, -3), 12, 1) );
+
+        // SpotLights
+        scene.add( new SpotLight(new Vector3(4, 4, 3), new Vector3(4, 0, -7), new ColorMagnitude(0, 10, 0), 1, 20.0) );
+        scene.add( new SpotLight(new Vector3(0, 4, 2), new Vector3(4, 0, -7), new ColorMagnitude(10, 0, 0), 1, 20.0) );
+        scene.add( new SpotLight(new Vector3(8, 4, 2), new Vector3(4, 0, -7), new ColorMagnitude(0, 0, 10), 1, 20.0) );
+
+        // Planes
+        scene.add( new Plane(new Vector3(0, 0, -28), new Vector3(0, 0, 1), newMat(2, 2, 2, 3.2, 3.2, 3.2, 0, 0, 0)) );
+        scene.add( new Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0), newMat(2, 2, 2, 3.2, 3.2, 3.2, 0, 0, 0)) );
+
+        // Spheres
+        //scene.add( new Sphere(new Vector3(4, 3, -3), newMat(0, 0, 0, 5, 5, 5, 1, 1, 1), 2.0) );
 
         return scene;
     }

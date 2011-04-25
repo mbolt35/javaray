@@ -34,15 +34,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This class is used as a wrapper for PNG ImageIO. It simply exposes a simple pixel writing method and an image
  * generation utility.
  *
+ * All concurrency structures and designed handled by realjenius - thanks sir!
+ *
  * @author Matt Bolt, mbolt35@gmail.com
+ * @author realjenius
  */
 public class PngImage {
     private static final Logger logger = LoggerFactory.getLogger(PngImage.class);
 
-    private LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
-    private AtomicBoolean accepting = new AtomicBoolean(true);
+    private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
+    private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final BufferedImage bi;
     private final Graphics2D graphics;
+    private final Thread consumer;
 
     private final int width;
     private final int height;
@@ -50,10 +54,10 @@ public class PngImage {
     public PngImage(int width, int height) {
         this.width = width;
         this.height = height;
-        this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         this.graphics = bi.createGraphics();
 
-        Thread t = new Thread(new Runnable() {
+         consumer = new Thread(new Runnable() {
             @Override
         	public void run() {
         		try {
@@ -63,13 +67,15 @@ public class PngImage {
 	        		}
         		}
         		catch(InterruptedException e) {
-        			logger.debug("Someone must want us to stop!");
-        			throw new RuntimeException("Image render thread stopped unexpectedly.");
+        			//logger.debug("Someone must want us to stop!");
+        			//throw new RuntimeException("Image render thread stopped unexpectedly.");
         		}
+
+                logger.debug("Done!!!!");
         	}
         });
         
-        t.start();
+        consumer.start();
     }
 
     private static class Pixel {
@@ -94,7 +100,8 @@ public class PngImage {
     }
 
     public void createPngImage(String fileName) {
-    	accepting.set(false);
+        accepting.set(false);
+
         try {
             File file = new File(fileName);
 
@@ -103,6 +110,8 @@ public class PngImage {
             }
 
             ImageIO.write(bi, "PNG", file);
+
+            consumer.interrupt();
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
         }
