@@ -17,7 +17,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.util;
+package com.mattbolt.javaray.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,67 +39,49 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Matt Bolt, mbolt35@gmail.com
  * @author realjenius
  */
-public class PngImage {
-    private static final Logger logger = LoggerFactory.getLogger(PngImage.class);
+public class ImageTarget implements RenderTarget {
+    private static final Logger logger = LoggerFactory.getLogger(ImageTarget.class);
 
     private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
     private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final BufferedImage bi;
-    private final Graphics2D graphics;
-    private final Thread consumer;
+    private final ImageType imageType;
 
     private final int width;
     private final int height;
+    private final String fileName;
 
-    public PngImage(int width, int height) {
+    private final Thread consumer;
+
+    public ImageTarget(String fileName, ImageType imageType, int width, int height) {
+        this.fileName = fileName + "." + imageType.getType().toLowerCase();
+        this.imageType = imageType;
         this.width = width;
         this.height = height;
+
         this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        this.graphics = bi.createGraphics();
+        GraphicsPixelRenderer pixelRenderer = new GraphicsPixelRenderer(bi.createGraphics());
 
-         consumer = new Thread(new Runnable() {
-            @Override
-        	public void run() {
-        		try {
-        			while(accepting.get()) {
-	        			Pixel p = pixels.take();
-	        			renderPixel( p );
-	        		}
-        		}
-        		catch(InterruptedException e) {
-        			//logger.debug("Someone must want us to stop!");
-        			//throw new RuntimeException("Image render thread stopped unexpectedly.");
-        		}
-
-                logger.debug("Done!!!!");
-        	}
-        });
-        
-        consumer.start();
+        consumer = new Thread(new GraphicsWorker(pixels, accepting, pixelRenderer));
     }
 
-    private static class Pixel {
-    	int x;
-    	int y;
-    	Color color;
-    	
-    	private Pixel( int x, int y, Color color ) {
-    		this.x = x;
-    		this.y = y;
-    		this.color = color;
-    	}
-    }
-
+    @Override
     public void setPixelAt(int x, int y, Color color) {
-        pixels.add(new Pixel(x, y, color));
+        pixels.add(new Pixel(x, height - y, color));
+    }
+
+    @Override
+    public void start() {
+        consumer.start();    
+    }
+
+    @Override
+    public void refresh() {
+
     }
     
-    private void renderPixel( Pixel p ) {
-    	graphics.setColor(p.color);
-        graphics.fillRect(p.x, height - p.y, 1, 1);
-    }
-
-    public void createPngImage(String fileName) {
+    @Override
+    public void complete() {
         accepting.set(false);
 
         try {
@@ -109,11 +91,30 @@ public class PngImage {
                 boolean fileDeleted = file.delete();
             }
 
-            ImageIO.write(bi, "PNG", file);
+            ImageIO.write(bi, imageType.getType(), file);
 
             consumer.interrupt();
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
+        }
+    }
+
+    /**
+     * This enumeration type is used to
+     */
+    public static enum ImageType {
+        PNG("PNG"),
+        JPG("JPG"),
+        BMP("BMP");
+
+        private String type;
+
+        ImageType(String type) {
+            this.type = type;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

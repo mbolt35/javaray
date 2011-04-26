@@ -27,7 +27,6 @@ import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.util.ColorHelper;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import com.mattbolt.javaray.util.JavaRayExecutorFactory;
-import com.mattbolt.javaray.util.PngImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,22 +49,24 @@ public class RayTracer {
     private static final Logger logger = LoggerFactory.getLogger(RayTracer.class);
 
     private final int totalSamples;
-    private final int chunkSize;
+    private final int xChunkSize;
+    private final int yChunkSize;
     private final ExecutorService imageSegments;
 
     public RayTracer(JavaRayConfiguration configuration) {
         totalSamples = configuration.getAntiAlias();
-        chunkSize = configuration.getChunkSize();
+        xChunkSize = configuration.getXChunkSize();
+        yChunkSize = configuration.getYChunkSize();
         imageSegments = JavaRayExecutorFactory.newFixedThreadPool(configuration.getThreadPoolSize());
     }
 
-    public void synchronousRender(Scene scene, View view, Camera camera) {
-        final PngImage pngImage = new PngImage(view.getWidth(), view.getHeight());
-
+    public void synchronousRender(Scene scene, View view, Camera camera, final RenderTarget renderTarget) {
         Rectangle rect = new Rectangle(0, 0, view.getWidth(), view.getHeight());
         final CountDownLatch latch = new CountDownLatch(1);
 
-        imageSegments.submit( new ImageSegmentWorker(scene, view, camera, pngImage, rect, totalSamples, new GenericCallback() {
+        renderTarget.start();
+
+        imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, rect, totalSamples, new GenericCallback() {
             @Override
             public void onComplete() {
                 latch.countDown();
@@ -75,8 +76,7 @@ public class RayTracer {
 
         try {
             latch.await();
-
-            pngImage.createPngImage("test.png");
+            renderTarget.complete();
         } catch (InterruptedException e) {
             logger.error(e.getStackTrace().toString());
         }
@@ -85,33 +85,35 @@ public class RayTracer {
         imageSegments.shutdown();
     }
 
-    public void render(Scene scene, View view, Camera camera) {
-        final PngImage pngImage = new PngImage(view.getWidth(), view.getHeight());
-
-        int chunkWidth = (int) Math.floor(view.getWidth() / chunkSize);
-        int chunkHeight = (int) Math.floor(view.getHeight() / chunkSize);
+    public void render(Scene scene, View view, Camera camera, final RenderTarget renderTarget) {
+        int chunkWidth = (int) Math.floor(view.getWidth() / xChunkSize);
+        int chunkHeight = (int) Math.floor(view.getHeight() / yChunkSize);
         int totals = (view.getWidth() / chunkWidth) * (view.getHeight() / chunkHeight);
 
         final CountDownLatch latch = new CountDownLatch(totals);
 
+        renderTarget.start();
+        
         for (int x = 0; x < view.getWidth(); x += chunkWidth) {
             for (int y = 0; y < view.getHeight(); y += chunkHeight) {
                 Rectangle rect = new Rectangle(x, y, chunkWidth, chunkHeight);
 
-                imageSegments.submit( new ImageSegmentWorker(scene, view, camera, pngImage, rect, totalSamples, new GenericCallback() {
-                    @Override
-                    public void onComplete() {
-                        latch.countDown();
-                        logger.debug("count: {}", latch.getCount());
-                    }
-                }) );
+                imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, rect, totalSamples,
+                    new GenericCallback() {
+                        @Override
+                        public void onComplete() {
+                            latch.countDown();
+                            logger.debug("count: {}", latch.getCount());
+                            renderTarget.refresh();
+                        }
+                    }) );
             }
         }
 
         try {
             latch.await();
 
-            pngImage.createPngImage("test.png");
+            renderTarget.complete();
         } catch (InterruptedException e) {
             logger.error(e.getStackTrace().toString());
         }
@@ -132,7 +134,7 @@ public class RayTracer {
         private final View view;
         private final Camera camera;
 
-        private final PngImage pngImage;
+        private final RenderTarget renderTarget;
         private final Rectangle renderRect;
         private final double sizeX, sizeY;
         private final int totalSamples;
@@ -142,7 +144,7 @@ public class RayTracer {
         ImageSegmentWorker( Scene scene,
                             View view,
                             Camera camera,
-                            PngImage pngImage,
+                            RenderTarget renderTarget,
                             Rectangle renderRect,
                             int samples,
                             GenericCallback callback )
@@ -150,7 +152,7 @@ public class RayTracer {
             this.scene = scene;
             this.view = view;
             this.camera = camera;
-            this.pngImage = pngImage;
+            this.renderTarget = renderTarget;
             this.renderRect = renderRect;
             this.sizeX = ((double) scene.getWorldWidth()) / ((double) view.getWidth());
             this.sizeY = ((double) scene.getWorldHeight()) / ((double) view.getHeight());
@@ -190,12 +192,12 @@ public class RayTracer {
 
                         Vector3 vec = Vector3.subtract(newPosition, camera.getPosition());
 
-                        intensities.add( rayTrace(scene.getSceneObjects(), camera.getPosition(), vec) );
+                        intensities.add(rayTrace(scene.getSceneObjects(), camera.getPosition(), vec));
                     }
 
                     intensities.scale(255.0 / totalSamples);
                     clamp(intensities);
-                    pngImage.setPixelAt(x, y, ColorHelper.toColor(intensities));
+                    renderTarget.setPixelAt(x, y, ColorHelper.toColor(intensities));
                 }
             }
         }

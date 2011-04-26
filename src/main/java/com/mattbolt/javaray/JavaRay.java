@@ -26,10 +26,12 @@ import com.mattbolt.javaray.light.SpotLight;
 import com.mattbolt.javaray.primitives.Plane;
 import com.mattbolt.javaray.primitives.Sphere;
 import com.mattbolt.javaray.render.ColorMagnitude;
+import com.mattbolt.javaray.render.ImageTarget;
 import com.mattbolt.javaray.render.Material;
 import com.mattbolt.javaray.render.RayTracer;
 import com.mattbolt.javaray.render.Scene;
 import com.mattbolt.javaray.render.View;
+import com.mattbolt.javaray.render.WindowTarget;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,7 @@ public class JavaRay {
     
 
     public static void main(String[] args) {
+
         logger.info( "Starting JavaRay Ray-Tracer by: Matt Bolt [mbolt35@gmail.com]" );
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext("/JavaRayApplicationContext.xml");
@@ -60,15 +63,21 @@ public class JavaRay {
         });
 
         Camera camera = new Camera(new Vector3(4, 3, 3));
-        Scene scene = getSceneThree(configuration);
+        Scene scene = getSceneTwo(configuration);
 
         long t = new Date().getTime();
 
         //new RayTracer(configuration).synchronousRender(scene, view, camera);
 
-        new RayTracer(configuration).render(scene, view, camera);
+        final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(),
+            view.getHeight());
 
-        logger.debug("Took: {} seconds", ((new Date().getTime() - t) / 1000));
+        final WindowTarget window = new WindowTarget(0, 0, view.getWidth(), view.getHeight());
+        
+        new RayTracer(configuration).render(scene, view, camera, image);
+
+        logger.debug("Complete! Took: {} seconds", ((new Date().getTime() - t) / 1000));
+
     }
 
     private static Scene getSceneOne(JavaRayConfiguration configuration) {

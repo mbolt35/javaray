@@ -36,7 +36,8 @@
         <constructor-arg index="3" value="${renderer.view.height}" type="int"/>
         <constructor-arg index="4" value="${renderer.antialias}" type="int"/>
         <constructor-arg index="5" value="${renderer.threadpool.size}" type="int"/>
-        <constructor-arg index="6" value="${renderer.chunks}" type="int"/>
+        <constructor-arg index="6" value="${renderer.width.chunks}" type="int"/>
+        <constructor-arg index="7" value="${renderer.height.chunks}" type="int"/>
     </bean>
 
 </beans>
