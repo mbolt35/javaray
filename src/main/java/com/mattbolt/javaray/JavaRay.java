@@ -47,7 +47,6 @@ import java.util.Date;
 public class JavaRay {
     private static final Logger logger = LoggerFactory.getLogger(JavaRay.class);
     
-
     public static void main(String[] args) {
 
         logger.info( "Starting JavaRay Ray-Tracer by: Matt Bolt [mbolt35@gmail.com]" );

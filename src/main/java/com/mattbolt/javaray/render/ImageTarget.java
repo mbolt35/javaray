@@ -46,15 +46,15 @@ public class ImageTarget implements RenderTarget {
     private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final BufferedImage bi;
     private final ImageType imageType;
+    private final File file;
 
     private final int width;
     private final int height;
-    private final String fileName;
 
     private final Thread consumer;
 
     public ImageTarget(String fileName, ImageType imageType, int width, int height) {
-        this.fileName = fileName + "." + imageType.getType().toLowerCase();
+        this.file = new File(fileName + "." + imageType.getType().toLowerCase());
         this.imageType = imageType;
         this.width = width;
         this.height = height;
@@ -85,8 +85,6 @@ public class ImageTarget implements RenderTarget {
         accepting.set(false);
 
         try {
-            File file = new File(fileName);
-
             if (file.exists()) {
                 boolean fileDeleted = file.delete();
             }
@@ -97,6 +95,10 @@ public class ImageTarget implements RenderTarget {
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
         }
+    }
+
+    public File getFile() {
+        return file;
     }
 
     /**

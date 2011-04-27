@@ -76,9 +76,10 @@ public class RayTracer {
 
         try {
             latch.await();
-            renderTarget.complete();
         } catch (InterruptedException e) {
             logger.error(e.getStackTrace().toString());
+        } finally {
+            renderTarget.complete();
         }
 
         logger.debug("Finished!");
@@ -112,10 +113,10 @@ public class RayTracer {
 
         try {
             latch.await();
-
-            renderTarget.complete();
         } catch (InterruptedException e) {
             logger.error(e.getStackTrace().toString());
+        } finally {
+            renderTarget.complete();
         }
 
         logger.debug("Finished!");
@@ -197,6 +198,7 @@ public class RayTracer {
 
                     intensities.scale(255.0 / totalSamples);
                     clamp(intensities);
+                    
                     renderTarget.setPixelAt(x, y, ColorHelper.toColor(intensities));
                 }
             }

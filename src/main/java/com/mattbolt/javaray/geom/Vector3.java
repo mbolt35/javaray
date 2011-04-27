@@ -163,7 +163,7 @@ public class Vector3 {
      * @return
      */
     public static Vector3 multiply(double scalar, Vector3 v) {
-        Vector3 result = v.copy();
+        Vector3 result = new Vector3(v);
         result.scale(scalar);
 
         return result;
