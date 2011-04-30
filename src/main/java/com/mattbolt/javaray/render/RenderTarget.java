@@ -19,8 +19,6 @@
 
 package com.mattbolt.javaray.render;
 
-import java.awt.*;
-
 /**
  * This interface defines an implementation prototype for a target object that a scene can be rendered to.
  *
@@ -31,5 +29,5 @@ public interface RenderTarget {
     void refresh();
     void complete();
 
-    void setPixelAt(int x, int y, Color color);
+    void setPixelAt(int x, int y, RayColor color);
 }

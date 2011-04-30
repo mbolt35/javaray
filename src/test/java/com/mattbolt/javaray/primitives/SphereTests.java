@@ -26,8 +26,6 @@ import com.mattbolt.javaray.render.Material;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:JavaRayApplicationContext.xml"})
 public class SphereTests {
-    private static final Logger logger = LoggerFactory.getLogger(SphereTests.class);
+    //private static final Logger logger = LoggerFactory.getLogger(SphereTests.class);
 
     @Autowired
     JavaRayConfiguration configuration;
@@ -54,7 +52,7 @@ public class SphereTests {
         scaledV1.scale(5.0);
         Vector3 scaledV2 = new Vector3(v2);
         scaledV2.scale(5.0);
-
+        /*
         logger.debug("v2 - v1: {}", Vector3.subtract(v2, v1));
         logger.debug("v1 + v2: {}", Vector3.add(v1, v2));
         logger.debug("v1 dot v2: {}", Vector3.dotProduct(v1, v2));
@@ -65,6 +63,7 @@ public class SphereTests {
         logger.debug("unit(v1): {}", v1Norm);
         logger.debug("unit(v2): {}", v2Norm);
         logger.debug("reflect(v1, v2): {}", Vector3.reflection(v1Norm, v2Norm));
+        */
     }
 
     @Test

@@ -27,15 +27,15 @@ import com.mattbolt.javaray.primitives.AbstractPrimitive;
 import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
 
 /**
  *
  */
 public class SpotLight extends AbstractPrimitive implements SceneObject {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpotLight.class);
+    private static final Logger logger = Logger.getLogger(SpotLight.class);
 
     private final Geometry geometry;
 

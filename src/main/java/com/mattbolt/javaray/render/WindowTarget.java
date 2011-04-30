@@ -76,7 +76,7 @@ public class WindowTarget implements RenderTarget {
     }
 
     @Override
-    public void setPixelAt(int x, int y, Color color) {
+    public void setPixelAt(int x, int y, RayColor color) {
         pixels.add(new Pixel(x, height - y - 1, color));
     }
 

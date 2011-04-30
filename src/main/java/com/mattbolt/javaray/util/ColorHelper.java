@@ -21,6 +21,7 @@ package com.mattbolt.javaray.util;
 
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.render.ColorMagnitude;
+import com.mattbolt.javaray.render.RayColor;
 
 import java.awt.*;
 
@@ -30,6 +31,10 @@ import java.awt.*;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public final class ColorHelper {
+
+    public static Vector3 toVector3(RayColor color) {
+        return new Vector3(color.getRed(), color.getGreen(), color.getBlue());
+    }
 
     public static Vector3 toVector3(Color color) {
         return new Vector3(color.getRed(), color.getGreen(), color.getBlue());
@@ -41,6 +46,10 @@ public final class ColorHelper {
 
     public static Color toColor(Vector3 vector) {
         return new Color((int) vector.getX(), (int) vector.getY(), (int) vector.getZ());
+    }
+
+    public static Color toColor(RayColor color) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue());
     }
     
     public static Color randomColor() {

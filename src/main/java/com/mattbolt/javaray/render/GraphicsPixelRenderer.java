@@ -19,6 +19,8 @@
 
 package com.mattbolt.javaray.render;
 
+import com.mattbolt.javaray.util.ColorHelper;
+
 import java.awt.*;
 
 /**
@@ -33,7 +35,7 @@ public class GraphicsPixelRenderer implements PixelRenderer {
 
     @Override
     public void renderPixel(Pixel p) {
-        graphics.setColor(p.color);
+        graphics.setColor(ColorHelper.toColor(p.color));
         graphics.fillRect(p.x, p.y, 1, 1);
     }
 }

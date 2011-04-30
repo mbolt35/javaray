@@ -27,10 +27,8 @@ import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.util.ColorHelper;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import com.mattbolt.javaray.util.JavaRayExecutorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,33 +44,35 @@ import java.util.concurrent.ExecutorService;
  */
 public class RayTracer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RayTracer.class);
+    private static final Logger logger = Logger.getLogger(RayTracer.class);
 
     private final int totalSamples;
     private final int xChunkSize;
     private final int yChunkSize;
-    private final ExecutorService imageSegments;
+    private final int threadPoolSize;
+
+    private ExecutorService imageSegments = null;
 
     public RayTracer(JavaRayConfiguration configuration) {
         totalSamples = configuration.getAntiAlias();
         xChunkSize = configuration.getXChunkSize();
         yChunkSize = configuration.getYChunkSize();
-        imageSegments = JavaRayExecutorFactory.newFixedThreadPool(configuration.getThreadPoolSize());
+        threadPoolSize = configuration.getThreadPoolSize();
     }
 
     public void synchronousRender(Scene scene, View view, Camera camera, final RenderTarget renderTarget) {
-        Rectangle rect = new Rectangle(0, 0, view.getWidth(), view.getHeight());
+        RenderChunk chunk = new RenderChunk(0, 0, view.getWidth(), view.getHeight());
         final CountDownLatch latch = new CountDownLatch(1);
 
         renderTarget.start();
 
-        imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, rect, totalSamples, new GenericCallback() {
+        new ImageSegmentWorker(scene, view, camera, renderTarget, chunk, totalSamples, new GenericCallback() {
             @Override
             public void onComplete() {
                 latch.countDown();
-                logger.debug("count: {}", latch.getCount());
+                logger.debug("count: " + latch.getCount());
             }
-        }) );
+        });
 
         try {
             latch.await();
@@ -83,10 +83,13 @@ public class RayTracer {
         }
 
         logger.debug("Finished!");
-        imageSegments.shutdown();
     }
 
     public void render(Scene scene, View view, Camera camera, final RenderTarget renderTarget) {
+        if (null == imageSegments) {
+            imageSegments = JavaRayExecutorFactory.newFixedThreadPool(threadPoolSize);
+        }
+        
         int chunkWidth = (int) Math.floor(view.getWidth() / xChunkSize);
         int chunkHeight = (int) Math.floor(view.getHeight() / yChunkSize);
         int totals = (view.getWidth() / chunkWidth) * (view.getHeight() / chunkHeight);
@@ -97,14 +100,14 @@ public class RayTracer {
         
         for (int x = 0; x < view.getWidth(); x += chunkWidth) {
             for (int y = 0; y < view.getHeight(); y += chunkHeight) {
-                Rectangle rect = new Rectangle(x, y, chunkWidth, chunkHeight);
+                RenderChunk chunk = new RenderChunk(x, y, chunkWidth, chunkHeight);
 
-                imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, rect, totalSamples,
+                imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, chunk, totalSamples,
                     new GenericCallback() {
                         @Override
                         public void onComplete() {
                             latch.countDown();
-                            logger.debug("count: {}", latch.getCount());
+                            logger.debug("count: " + latch.getCount());
                             renderTarget.refresh();
                         }
                     }) );
@@ -136,7 +139,7 @@ public class RayTracer {
         private final Camera camera;
 
         private final RenderTarget renderTarget;
-        private final Rectangle renderRect;
+        private final RenderChunk renderChunk;
         private final double sizeX, sizeY;
         private final int totalSamples;
 
@@ -146,7 +149,7 @@ public class RayTracer {
                             View view,
                             Camera camera,
                             RenderTarget renderTarget,
-                            Rectangle renderRect,
+                            RenderChunk renderChunk,
                             int samples,
                             GenericCallback callback )
         {
@@ -154,7 +157,7 @@ public class RayTracer {
             this.view = view;
             this.camera = camera;
             this.renderTarget = renderTarget;
-            this.renderRect = renderRect;
+            this.renderChunk = renderChunk;
             this.sizeX = ((double) scene.getWorldWidth()) / ((double) view.getWidth());
             this.sizeY = ((double) scene.getWorldHeight()) / ((double) view.getHeight());
             this.totalSamples = samples;
@@ -173,10 +176,10 @@ public class RayTracer {
         }
 
         private void performRayTrace() {
-            int posX = (int) renderRect.getX();
-            int posY = (int) renderRect.getY();
-            int width = posX + (int) renderRect.getWidth();
-            int height = posY + (int) renderRect.getHeight();
+            int posX = renderChunk.x;
+            int posY = renderChunk.y;
+            int width = posX + renderChunk.width;
+            int height = posY + renderChunk.height;
 
             for (int x = posX; x < width; ++x) {
                 for (int y = posY; y < height; ++y) {
@@ -199,7 +202,7 @@ public class RayTracer {
                     intensities.scale(255.0 / totalSamples);
                     clamp(intensities);
                     
-                    renderTarget.setPixelAt(x, y, ColorHelper.toColor(intensities));
+                    renderTarget.setPixelAt(x, y, new RayColor(intensities));
                 }
             }
         }

@@ -19,11 +19,9 @@
 
 package com.mattbolt.javaray.render;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author realjenius
  */
 public class ImageTarget implements RenderTarget {
-    private static final Logger logger = LoggerFactory.getLogger(ImageTarget.class);
+    private static final Logger logger = Logger.getLogger(ImageTarget.class);
 
     private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
     private final AtomicBoolean accepting = new AtomicBoolean(true);
@@ -66,7 +64,7 @@ public class ImageTarget implements RenderTarget {
     }
 
     @Override
-    public void setPixelAt(int x, int y, Color color) {
+    public void setPixelAt(int x, int y, RayColor color) {
         pixels.add(new Pixel(x, height - y, color));
     }
 
@@ -88,7 +86,7 @@ public class ImageTarget implements RenderTarget {
             if (file.exists()) {
                 boolean fileDeleted = file.delete();
             }
-
+            
             ImageIO.write(bi, imageType.getType(), file);
 
             consumer.interrupt();

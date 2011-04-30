@@ -19,17 +19,15 @@
 
 package com.mattbolt.javaray.render;
 
-import java.awt.*;
-
 /**
  * Pixel
  */
 public class Pixel {
     public int x;
     public int y;
-    public Color color;
+    public RayColor color;
 
-    public Pixel( int x, int y, Color color ) {
+    public Pixel(int x, int y, RayColor color) {
         this.x = x;
         this.y = y;
         this.color = color;
