@@ -20,7 +20,9 @@
 package com.mattbolt.javaray.render;
 
 /**
+ * This {@link PixelRenderer} implementation writes pixels to an {@code int[]}.
  *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class ArrayPixelRenderer implements PixelRenderer {
 

@@ -23,7 +23,9 @@ import com.mattbolt.javaray.geom.Geometry;
 import com.mattbolt.javaray.geom.SphereGeometry;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.render.Material;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,7 +34,7 @@ import org.apache.log4j.Logger;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public class Sphere extends AbstractPrimitive implements SceneObject {
-    private static final Logger logger = Logger.getLogger(Sphere.class);
+    private static final Logger logger = LoggerFactory.getLogger(Sphere.class);
 
     private final Geometry geometry;
 

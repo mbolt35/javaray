@@ -23,7 +23,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This
+ * This {@code Runnable} implementation uses a {@code BlockingQueue} of {@code Pixel} to write pixels to a canvas
+ * concurrently.
+ *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class GraphicsWorker implements Runnable {
 

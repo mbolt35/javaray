@@ -19,7 +19,8 @@
 
 package com.mattbolt.javaray.render;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author realjenius
  */
 public class ImageTarget implements RenderTarget {
-    private static final Logger logger = Logger.getLogger(ImageTarget.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImageTarget.class);
 
     private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
     private final AtomicBoolean accepting = new AtomicBoolean(true);
@@ -86,9 +87,9 @@ public class ImageTarget implements RenderTarget {
             if (file.exists()) {
                 boolean fileDeleted = file.delete();
             }
-            
-            ImageIO.write(bi, imageType.getType(), file);
 
+            ImageIO.write(bi, imageType.getType(), file);
+            
             consumer.interrupt();
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
@@ -100,7 +101,10 @@ public class ImageTarget implements RenderTarget {
     }
 
     /**
-     * This enumeration type is used to
+     * This enumeration type is passed to the image target to denote the type of image that will be encoded upon
+     * ray-trace completion.
+     *
+     * @author Matt Bolt, mbolt35@gmail.com
      */
     public static enum ImageType {
         PNG("PNG"),

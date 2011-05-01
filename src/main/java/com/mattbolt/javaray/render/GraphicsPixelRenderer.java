@@ -24,7 +24,9 @@ import com.mattbolt.javaray.util.ColorHelper;
 import java.awt.*;
 
 /**
+ * This {@link PixelRenderer} implementation draws pixels to a {@code java.awt.Graphics} object.
  *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class GraphicsPixelRenderer implements PixelRenderer {
     private final Graphics graphics;

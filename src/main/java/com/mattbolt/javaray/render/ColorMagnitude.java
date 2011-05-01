@@ -57,19 +57,19 @@ public class ColorMagnitude {
         return Double.compare(that.blue, blue) == 0
             && Double.compare(that.green, green) == 0
             && Double.compare(that.red, red) == 0;
-
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = red != +0.0d ? Double.doubleToLongBits(red) : 0L;
-        result = (int) (temp ^ (temp >>> 32));
+        long temp = red != +0.0d ? Double.doubleToLongBits(red) : 0L;
+        int result = (int) (temp ^ (temp >>> 32));
+
         temp = green != +0.0d ? Double.doubleToLongBits(green) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+
         temp = blue != +0.0d ? Double.doubleToLongBits(blue) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+
         return result;
     }
 }

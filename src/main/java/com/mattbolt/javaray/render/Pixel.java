@@ -20,7 +20,9 @@
 package com.mattbolt.javaray.render;
 
 /**
- * Pixel
+ * A simple container for an x position, y position, and color.
+ *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class Pixel {
     public int x;

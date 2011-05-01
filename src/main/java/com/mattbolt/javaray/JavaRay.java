@@ -33,9 +33,12 @@ import com.mattbolt.javaray.render.Scene;
 import com.mattbolt.javaray.render.View;
 import com.mattbolt.javaray.render.WindowTarget;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
-import org.apache.log4j.Logger;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -44,7 +47,7 @@ import java.util.Date;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public class JavaRay {
-    private static final Logger logger = Logger.getLogger(JavaRay.class);
+    private static final Logger logger = LoggerFactory.getLogger(JavaRay.class);
     
     public static void main(String[] args) {
         logger.info( "Starting JavaRay Ray-Tracer by: Matt Bolt [mbolt35@gmail.com]" );
@@ -66,12 +69,9 @@ public class JavaRay {
 
         //new RayTracer(configuration).synchronousRender(scene, view, camera);
 
-        final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(),
-            view.getHeight());
-
+        final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(), view.getHeight());
         final WindowTarget window = new WindowTarget(1900, 0, view.getWidth(), view.getHeight());
 
-        
         new RayTracer(configuration).render(scene, view, camera, window);
 
         long totalTime = ((new Date().getTime() - t) / 1000);

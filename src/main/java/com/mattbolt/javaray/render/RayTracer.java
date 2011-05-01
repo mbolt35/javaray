@@ -27,7 +27,9 @@ import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.util.ColorHelper;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import com.mattbolt.javaray.util.JavaRayExecutorFactory;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +46,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class RayTracer {
 
-    private static final Logger logger = Logger.getLogger(RayTracer.class);
+    private static final Logger logger = LoggerFactory.getLogger(RayTracer.class);
 
     private final int totalSamples;
     private final int xChunkSize;
