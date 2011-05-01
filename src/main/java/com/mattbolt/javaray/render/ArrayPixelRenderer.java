@@ -42,7 +42,7 @@ public class ArrayPixelRenderer implements PixelRenderer {
         pixels[width * (p.y - 1) + p.x] = p.color.getARGB();
     }
 
-    public int[] getPixelArray() {
+    public int[] getPixels() {
         return pixels;
     }
 }
