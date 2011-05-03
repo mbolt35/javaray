@@ -74,7 +74,7 @@ public class RayTracer {
                 latch.countDown();
                 logger.debug("count: " + latch.getCount());
             }
-        });
+        }).run();
 
         try {
             latch.await();
