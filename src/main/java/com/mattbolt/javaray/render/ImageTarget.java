@@ -58,7 +58,7 @@ public class ImageTarget implements RenderTarget {
         this.width = width;
         this.height = height;
 
-        this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         GraphicsPixelRenderer pixelRenderer = new GraphicsPixelRenderer(bi.createGraphics());
 
         consumer = new Thread(new GraphicsWorker(pixels, accepting, pixelRenderer));
@@ -89,7 +89,7 @@ public class ImageTarget implements RenderTarget {
             }
 
             ImageIO.write(bi, imageType.getType(), file);
-            
+
             consumer.interrupt();
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
