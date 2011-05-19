@@ -17,24 +17,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
-
-import java.awt.image.WritableRaster;
+package com.mattbolt.javaray.util;
 
 /**
- * This class renders pixels using a {@code WritableRaster}.
+* This interface defines an implementation prototype for an object which notifies of an async task completion.
  *
  * @author Matt Bolt, mbolt35@gmail.com
- */
-public class RasterPixelRenderer implements PixelRenderer {
-    private final WritableRaster raster;
+*/
+public interface GenericCallback {
 
-    public RasterPixelRenderer(WritableRaster raster) {
-        this.raster = raster;
-    }
-
-    @Override
-    public void renderPixel(Pixel p) {
-        raster.setPixel(p.x, p.y, new int[] { p.color.getRed(), p.color.getGreen(), p.color.getBlue() });
-    }
+    /**
+     * This occurs on completion of a task.
+     */
+    void onComplete();
 }

@@ -24,11 +24,13 @@ import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
+import com.mattbolt.javaray.util.RenderHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:JavaRayApplicationContext.xml"})
@@ -37,6 +39,21 @@ public class SphereTests {
 
     @Autowired
     JavaRayConfiguration configuration;
+
+    @Test
+    public void renderHelperTest() {
+        System.out.println("GCD(300, 200) = " + RenderHelper.gcd(300, 200));
+
+        printChunkSize(300, 200);
+    }
+
+    private void printChunkSize(int width, int height) {
+        int gcd = RenderHelper.gcd(width, height);
+        int numXChunks = width /  gcd;
+        int numYChunks = height / gcd;
+
+        System.out.println("x-chunks: " + numXChunks + ", y-chunks: " + numYChunks);
+    }
 
     @Test
     public void vecTest() {
@@ -79,4 +96,6 @@ public class SphereTests {
 
         assert( sphere.getGeometry().hits(new Ray(eyePt, dir)).getHitPoint() != null );
     }
+
+
 }

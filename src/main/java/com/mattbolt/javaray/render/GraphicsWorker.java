@@ -19,6 +19,9 @@
 
 package com.mattbolt.javaray.render;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public class GraphicsWorker implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(GraphicsWorker.class);
 
     private final BlockingQueue<Pixel> pixels;
     private final AtomicBoolean latch;
@@ -49,7 +53,7 @@ public class GraphicsWorker implements Runnable {
                 pixelRenderer.renderPixel(p);
             }
         } catch (InterruptedException e) {
-
+            logger.debug("GraphicsWorker thread interrupted...");
         }
     }
 }

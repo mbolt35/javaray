@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * This class is used to generate {@code ExecutorService} which contain java-ray named {@code ThreadFactory}
  * implementations.
  */
-public class JavaRayExecutorFactory {
+public final class JavaRayExecutorFactory {
 
     public static ExecutorService newCachedThreadPool() {
         return Executors.newCachedThreadPool(new JavaRayThreadFactory("JavaRayPool", "JavaRayThread"));

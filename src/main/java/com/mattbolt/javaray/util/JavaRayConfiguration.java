@@ -24,7 +24,7 @@ package com.mattbolt.javaray.util;
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class JavaRayConfiguration {
+public final class JavaRayConfiguration {
 
     private final int worldWidth;
     private final int worldHeight;
