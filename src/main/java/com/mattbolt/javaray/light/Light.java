@@ -20,10 +20,11 @@
 package com.mattbolt.javaray.light;
 
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.Material;
 import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.primitives.Sphere;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.Material;
+
 
 /**
  * This class represents a light source

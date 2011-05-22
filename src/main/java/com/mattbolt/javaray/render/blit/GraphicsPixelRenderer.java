@@ -17,23 +17,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.blit;
 
-import com.mattbolt.javaray.render.blit.Pixel;
+import com.mattbolt.javaray.render.PixelRenderer;
+import com.mattbolt.javaray.util.ColorHelper;
 
+import java.awt.*;
 
 /**
- * This interface defines an implementation prototype for an object which renders each individual pixel passed.
+ * This {@link com.mattbolt.javaray.render.PixelRenderer} implementation draws pixels to a {@code java.awt.Graphics}
+ * object.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public interface PixelRenderer {
+public class GraphicsPixelRenderer implements PixelRenderer {
+    private final Graphics graphics;
 
-    /**
-     * This method renders the pixel to the implementations canvas.
-     *
-     * @param pixel The {@link Pixel} to render.
-     */
-    void renderPixel(Pixel pixel);
-    
+    public GraphicsPixelRenderer(Graphics graphics) {
+        this.graphics = graphics;
+    }
+
+    @Override
+    public void renderPixel(Pixel p) {
+        graphics.setColor(ColorHelper.toColor(p.color));
+        graphics.fillRect(p.x, p.y, 1, 1);
+    }
 }

@@ -17,24 +17,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.blit;
 
-import java.awt.image.WritableRaster;
+import com.mattbolt.javaray.materials.RayColor;
+
 
 /**
- * This class renders pixels using a {@code WritableRaster}.
+ * A simple container for an x position, y position, and color.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class RasterPixelRenderer implements PixelRenderer {
-    private final WritableRaster raster;
+public class Pixel {
+    public int x;
+    public int y;
+    public RayColor color;
 
-    public RasterPixelRenderer(WritableRaster raster) {
-        this.raster = raster;
-    }
-
-    @Override
-    public void renderPixel(Pixel p) {
-        raster.setPixel(p.x, p.y, new int[] { p.color.getRed(), p.color.getGreen(), p.color.getBlue() });
+    public Pixel(int x, int y, RayColor color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
     }
 }

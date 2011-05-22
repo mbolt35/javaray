@@ -23,10 +23,10 @@ import com.mattbolt.javaray.geom.Geometry;
 import com.mattbolt.javaray.geom.Ray;
 import com.mattbolt.javaray.geom.SphereGeometry;
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.Material;
 import com.mattbolt.javaray.primitives.AbstractPrimitive;
 import com.mattbolt.javaray.primitives.SceneObject;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.Material;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +64,14 @@ public class SpotLight extends AbstractPrimitive implements SceneObject {
      * spotlight geometry
      */
     private static class SpotGeometry extends SphereGeometry implements Geometry {
-        private final Vector3 position;
-        private final Vector3 target;
         private final Vector3 lightDirection;
         private final double theta;
 
         private SpotGeometry(Vector3 position, Vector3 target, double radius, double theta) {
             super(position, radius);
 
-            this.position = new Vector3(position);
-            this.target = new Vector3(target);
             this.lightDirection = Vector3.subtract(position, target);
-            this.theta = Math.cos(Math.PI * (theta / 180.0));
+            this.theta = Math.cos(Math.toRadians(theta));
 
             lightDirection.normalize();
         }

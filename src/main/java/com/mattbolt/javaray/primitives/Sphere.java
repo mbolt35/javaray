@@ -22,7 +22,7 @@ package com.mattbolt.javaray.primitives;
 import com.mattbolt.javaray.geom.Geometry;
 import com.mattbolt.javaray.geom.SphereGeometry;
 import com.mattbolt.javaray.geom.Vector3;
-import com.mattbolt.javaray.render.Material;
+import com.mattbolt.javaray.materials.Material;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

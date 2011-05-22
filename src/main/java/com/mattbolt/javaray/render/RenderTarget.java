@@ -19,15 +19,40 @@
 
 package com.mattbolt.javaray.render;
 
+import com.mattbolt.javaray.materials.RayColor;
+
+
 /**
  * This interface defines an implementation prototype for a target object that a scene can be rendered to.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public interface RenderTarget {
-    void start();
+
+    /**
+     * This method initializes the render target to prepare of receiving pixel data.
+     */
+    void init();
+
+    /**
+     * This method is used to update the render target mid-render. This is especially useful when rendering to a live
+     * canvas.
+     */
     void refresh();
+
+    /**
+     * This method notifies the render target of completion, and allows any final IO to process.
+     */
     void complete();
 
+    /**
+     * This method pushes the coordinate and color data to the render target queue for processing.
+     *
+     * @param x The x-axis position of the pixel.
+     *
+     * @param y The y-axis position of the pixel.
+     *
+     * @param color The {@code ARGB} color value of the pixel.
+     */
     void setPixelAt(int x, int y, RayColor color);
 }

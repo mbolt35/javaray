@@ -21,8 +21,8 @@ package com.mattbolt.javaray.primitives;
 
 import com.mattbolt.javaray.geom.Ray;
 import com.mattbolt.javaray.geom.Vector3;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.Material;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.Material;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import com.mattbolt.javaray.util.RenderHelper;
 import org.junit.Test;

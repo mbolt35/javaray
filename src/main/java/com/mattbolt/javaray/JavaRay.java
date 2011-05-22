@@ -23,15 +23,15 @@ import com.mattbolt.javaray.camera.Camera;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.light.Light;
 import com.mattbolt.javaray.light.SpotLight;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.Material;
 import com.mattbolt.javaray.primitives.Plane;
 import com.mattbolt.javaray.primitives.Sphere;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.ImageTarget;
-import com.mattbolt.javaray.render.Material;
+import com.mattbolt.javaray.render.targets.ImageTarget;
 import com.mattbolt.javaray.render.RayTracer;
 import com.mattbolt.javaray.render.Scene;
 import com.mattbolt.javaray.render.View;
-import com.mattbolt.javaray.render.WindowTarget;
+import com.mattbolt.javaray.render.targets.WindowTarget;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 
 import org.springframework.context.ApplicationContext;
@@ -72,7 +72,7 @@ public class JavaRay {
         final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(), view.getHeight());
         final WindowTarget window = new WindowTarget(1900, 0, view.getWidth(), view.getHeight());
 
-        new RayTracer(configuration).render(scene, view, camera, image);
+        new RayTracer(configuration).render(scene, view, camera, window);
 
         long totalTime = ((new Date().getTime() - t) / 1000);
         logger.debug("Complete! Took: " + totalTime + "seconds");

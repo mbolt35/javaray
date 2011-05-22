@@ -17,27 +17,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.blit;
 
-import com.mattbolt.javaray.util.ColorHelper;
+import com.mattbolt.javaray.render.PixelRenderer;
 
-import java.awt.*;
+import java.awt.image.WritableRaster;
 
 /**
- * This {@link PixelRenderer} implementation draws pixels to a {@code java.awt.Graphics} object.
+ * This class renders pixels using a {@code WritableRaster}.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class GraphicsPixelRenderer implements PixelRenderer {
-    private final Graphics graphics;
+public class RasterPixelRenderer implements PixelRenderer {
+    private final WritableRaster raster;
 
-    public GraphicsPixelRenderer(Graphics graphics) {
-        this.graphics = graphics;
+    public RasterPixelRenderer(WritableRaster raster) {
+        this.raster = raster;
     }
 
     @Override
     public void renderPixel(Pixel p) {
-        graphics.setColor(ColorHelper.toColor(p.color));
-        graphics.fillRect(p.x, p.y, 1, 1);
+        raster.setPixel(p.x, p.y, new int[] { p.color.getRed(), p.color.getGreen(), p.color.getBlue() });
     }
 }

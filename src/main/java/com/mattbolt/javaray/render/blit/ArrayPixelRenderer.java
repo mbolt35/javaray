@@ -17,21 +17,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.blit;
+
+import com.mattbolt.javaray.render.PixelRenderer;
+
 
 /**
- * A simple container for an x position, y position, and color.
+ * This {@link com.mattbolt.javaray.render.PixelRenderer} implementation writes pixels to an {@code int[]}.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class Pixel {
-    public int x;
-    public int y;
-    public RayColor color;
+public class ArrayPixelRenderer implements PixelRenderer {
 
-    public Pixel(int x, int y, RayColor color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
+    private final int width;
+    private final int height;
+
+    private final int[] pixels;
+
+    public ArrayPixelRenderer(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.pixels = new int[width * height];
+    }
+
+    @Override
+    public void renderPixel(Pixel p) {
+        pixels[width * (p.y - 1) + p.x] = p.color.getARGB();
+    }
+
+    public int[] getPixels() {
+        return pixels;
     }
 }

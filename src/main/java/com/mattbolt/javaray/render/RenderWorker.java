@@ -19,30 +19,32 @@
 
 package com.mattbolt.javaray.render;
 
+import com.mattbolt.javaray.render.blit.Pixel;
+
+
 /**
- * This {@link PixelRenderer} implementation writes pixels to an {@code int[]}.
+ * This interface defines an implementation prototype for a thread whose purpose is to push pixels for rendering in a
+ * queue for a {@link PixelRenderer} to consume.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class ArrayPixelRenderer implements PixelRenderer {
+public interface RenderWorker {
 
-    private final int width;
-    private final int height;
+    /**
+     * This method starts the graphics thread.
+     */
+    void start();
 
-    private final int[] pixels;
+    /**
+     * This method pushes a pixel to the queue for consumption.
+     *
+     * @param pixel The pixel to render.
+     */
+    void pushPixel(Pixel pixel);
 
-    public ArrayPixelRenderer(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.pixels = new int[width * height];
-    }
+    /**
+     * This method notifies the worker that all pixels have been consumed and interrupts the thread.
+     */
+    void complete();
 
-    @Override
-    public void renderPixel(Pixel p) {
-        pixels[width * (p.y - 1) + p.x] = p.color.getARGB();
-    }
-
-    public int[] getPixels() {
-        return pixels;
-    }
 }

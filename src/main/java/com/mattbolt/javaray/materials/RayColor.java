@@ -17,7 +17,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.materials;
 
 import com.mattbolt.javaray.geom.Vector3;
 
@@ -85,6 +85,6 @@ public class RayColor {
         return ((alpha & 0xFF) << 24)
              | ((red & 0xFF) << 16)
              | ((green & 0xFF) << 8)
-             | ((blue & 0xFF) << 0);
+             | ((blue & 0xFF));
     }
 }

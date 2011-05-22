@@ -19,10 +19,11 @@
 
 package com.mattbolt.javaray.render;
 
+import com.mattbolt.javaray.render.blit.Pixel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -31,29 +32,62 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class GraphicsWorker implements Runnable {
+public class GraphicsWorker implements RenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(GraphicsWorker.class);
 
-    private final BlockingQueue<Pixel> pixels;
-    private final AtomicBoolean latch;
-    private final PixelRenderer pixelRenderer;
+    private final Thread consumer;
+    private final GraphicsRunnable runnable;
 
-    public GraphicsWorker(BlockingQueue<Pixel> pixels, AtomicBoolean latch, PixelRenderer pixelRenderer) {
-        this.pixels = pixels;
-        this.latch = latch;
-        this.pixelRenderer = pixelRenderer;
+    public GraphicsWorker(PixelRenderer pixelRenderer) {
+        runnable = new GraphicsRunnable(pixelRenderer);
+        consumer = new Thread(runnable);
     }
 
     @Override
-    public void run() {
-        try {
-            while (latch.get()) {
-                Pixel p = pixels.take();
+    public void start() {
+        consumer.start();
+    }
 
-                pixelRenderer.renderPixel(p);
-            }
-        } catch (InterruptedException e) {
-            logger.debug("GraphicsWorker thread interrupted...");
+    @Override
+    public void pushPixel(Pixel pixel) {
+        runnable.pixels.add(pixel);
+    }
+
+    @Override
+    public void complete() {
+        runnable.latch.set(false);
+        consumer.interrupt();
+    }
+
+
+    /**
+     * The {@code Runnable} implementation used for the worker thread.
+     *
+     * @author Matt Bolt, mbolt35@gmail.com
+     */
+    private static class GraphicsRunnable implements Runnable {
+        private final LinkedBlockingQueue<Pixel> pixels;
+        private final AtomicBoolean latch;
+        private final PixelRenderer pixelRenderer;
+
+        public GraphicsRunnable(PixelRenderer pixelRenderer) {
+            this.pixels = new LinkedBlockingQueue<Pixel>();
+            this.latch = new AtomicBoolean(true);
+            this.pixelRenderer = pixelRenderer;
         }
+
+        @Override
+        public void run() {
+            try {
+                while (latch.get()) {
+                    Pixel p = pixels.take();
+
+                    pixelRenderer.renderPixel(p);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("GraphicsWorker Completed...");
+            }
+        }
+
     }
 }

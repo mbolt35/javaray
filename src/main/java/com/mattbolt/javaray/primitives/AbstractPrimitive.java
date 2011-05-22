@@ -20,8 +20,8 @@
 package com.mattbolt.javaray.primitives;
 
 import com.mattbolt.javaray.geom.Vector3;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.Material;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.Material;
 
 import java.util.concurrent.atomic.AtomicLong;
 

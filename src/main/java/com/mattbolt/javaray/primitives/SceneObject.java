@@ -21,7 +21,8 @@ package com.mattbolt.javaray.primitives;
 
 import com.mattbolt.javaray.geom.Geometry;
 import com.mattbolt.javaray.geom.Vector3;
-import com.mattbolt.javaray.render.Material;
+import com.mattbolt.javaray.materials.Material;
+
 
 /**
  * This interface defines an implementation prototype for an object that can be rendered in the scene.
@@ -36,7 +37,7 @@ public interface SceneObject {
     Vector3 getPosition();
 
     /**
-     * This property contains the {@link com.mattbolt.javaray.render.Material} used to render the shape.
+     * This property contains the {@link com.mattbolt.javaray.materials.Material} used to render the shape.
      */
     Material getMaterial();
 

@@ -17,7 +17,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.materials;
 
 /**
  * This class represents the magnitude of color to use in a material.
@@ -49,8 +49,12 @@ public class ColorMagnitude {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ColorMagnitude)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ColorMagnitude)) {
+            return false;
+        }
 
         ColorMagnitude that = (ColorMagnitude) o;
 

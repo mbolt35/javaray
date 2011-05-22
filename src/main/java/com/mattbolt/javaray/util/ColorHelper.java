@@ -20,8 +20,8 @@
 package com.mattbolt.javaray.util;
 
 import com.mattbolt.javaray.geom.Vector3;
-import com.mattbolt.javaray.render.ColorMagnitude;
-import com.mattbolt.javaray.render.RayColor;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.RayColor;
 
 import java.awt.*;
 

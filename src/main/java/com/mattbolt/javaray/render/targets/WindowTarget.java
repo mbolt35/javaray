@@ -17,14 +17,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.targets;
+
+import com.mattbolt.javaray.materials.RayColor;
+import com.mattbolt.javaray.render.GraphicsWorker;
+import com.mattbolt.javaray.render.blit.Pixel;
+import com.mattbolt.javaray.render.blit.RasterPixelRenderer;
+import com.mattbolt.javaray.render.RenderTarget;
+import com.mattbolt.javaray.render.RenderWorker;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,11 +41,8 @@ public class WindowTarget implements RenderTarget {
     private static final AtomicLong windowIdFactory = new AtomicLong(1);
 
     private final Frame windowFrame;
-
-    private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
-    private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final Canvas canvas;
-    private final Thread consumer;
+    private final RenderWorker renderWorker;
 
     private final int width;
     private final int height;
@@ -55,8 +57,7 @@ public class WindowTarget implements RenderTarget {
         this.height = height;
 
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        RasterPixelRenderer pixelRenderer = new RasterPixelRenderer(bi.getRaster());
-        consumer = new Thread(new GraphicsWorker(pixels, accepting, pixelRenderer));
+        renderWorker = new GraphicsWorker(new RasterPixelRenderer(bi.getRaster()));
 
         canvas = new RenderCanvas(bi);
         canvas.setSize(width, height);
@@ -77,13 +78,13 @@ public class WindowTarget implements RenderTarget {
 
     @Override
     public void setPixelAt(int x, int y, RayColor color) {
-        pixels.add(new Pixel(x, height - y - 1, color));
+        renderWorker.pushPixel(new Pixel(x, height - y - 1, color));
     }
 
     @Override
-    public void start() {
+    public void init() {
         windowFrame.setVisible(true);
-        consumer.start();
+        renderWorker.start();
     }
 
     @Override
@@ -93,12 +94,13 @@ public class WindowTarget implements RenderTarget {
 
     @Override
     public void complete() {
-        accepting.set(false);
-        consumer.interrupt();
+        renderWorker.complete();
     }
 
     /**
-     * 
+     * This custom {@code Canvas} sub-class draws the contents of the render to the window frame.
+     *
+     * @author Matt Bolt, mbolt35@gmail.com
      */
     private static class RenderCanvas extends Canvas {
         private final BufferedImage bi;

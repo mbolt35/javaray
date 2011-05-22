@@ -22,7 +22,10 @@ package com.mattbolt.javaray.render;
 import com.mattbolt.javaray.camera.Camera;
 import com.mattbolt.javaray.geom.Geometry;
 import com.mattbolt.javaray.geom.Ray;
+import com.mattbolt.javaray.geom.Rect;
 import com.mattbolt.javaray.geom.Vector3;
+import com.mattbolt.javaray.materials.ColorMagnitude;
+import com.mattbolt.javaray.materials.RayColor;
 import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.util.ColorHelper;
 import com.mattbolt.javaray.util.GenericCallback;
@@ -44,7 +47,7 @@ public class ImageSegmentWorker implements Runnable {
     private final Camera camera;
 
     private final RenderTarget renderTarget;
-    private final RenderChunk renderChunk;
+    private final Rect rect;
     private final double sizeX, sizeY;
     private final int totalSamples;
 
@@ -54,7 +57,7 @@ public class ImageSegmentWorker implements Runnable {
                                View view,
                                Camera camera,
                                RenderTarget renderTarget,
-                               RenderChunk renderChunk,
+                               Rect rect,
                                int samples,
                                GenericCallback callback )
     {
@@ -62,7 +65,7 @@ public class ImageSegmentWorker implements Runnable {
         this.view = view;
         this.camera = camera;
         this.renderTarget = renderTarget;
-        this.renderChunk = renderChunk;
+        this.rect = rect;
         this.sizeX = ((double) scene.getWorldWidth()) / ((double) view.getWidth());
         this.sizeY = ((double) scene.getWorldHeight()) / ((double) view.getHeight());
         this.totalSamples = samples;
@@ -71,10 +74,10 @@ public class ImageSegmentWorker implements Runnable {
 
     @Override
     public void run() {
-        int posX = renderChunk.x;
-        int posY = renderChunk.y;
-        int width = posX + renderChunk.width;
-        int height = posY + renderChunk.height;
+        int posX = rect.x;
+        int posY = rect.y;
+        int width = posX + rect.width;
+        int height = posY + rect.height;
 
         for (int x = posX; x < width; ++x) {
             for (int y = posY; y < height; ++y) {

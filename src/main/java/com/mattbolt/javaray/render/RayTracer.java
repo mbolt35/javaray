@@ -20,10 +20,10 @@
 package com.mattbolt.javaray.render;
 
 import com.mattbolt.javaray.camera.Camera;
+import com.mattbolt.javaray.geom.Rect;
 import com.mattbolt.javaray.util.GenericCallback;
 import com.mattbolt.javaray.util.JavaRayConfiguration;
 import com.mattbolt.javaray.util.JavaRayExecutorFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +56,12 @@ public class RayTracer {
     }
 
     public void synchronousRender(Scene scene, View view, Camera camera, final RenderTarget renderTarget) {
-        RenderChunk chunk = new RenderChunk(0, 0, view.getWidth(), view.getHeight());
+        Rect rect = new Rect(0, 0, view.getWidth(), view.getHeight());
         final CountDownLatch latch = new CountDownLatch(1);
 
-        renderTarget.start();
+        renderTarget.init();
 
-        new ImageSegmentWorker(scene, view, camera, renderTarget, chunk, totalSamples, new GenericCallback() {
+        new ImageSegmentWorker(scene, view, camera, renderTarget, rect, totalSamples, new GenericCallback() {
             @Override
             public void onComplete() {
                 latch.countDown();
@@ -91,13 +91,14 @@ public class RayTracer {
 
         final CountDownLatch latch = new CountDownLatch(totals);
 
-        renderTarget.start();
-        
+        renderTarget.init();
+
         for (int x = 0; x < view.getWidth(); x += chunkWidth) {
             for (int y = 0; y < view.getHeight(); y += chunkHeight) {
-                RenderChunk chunk = new RenderChunk(x, y, chunkWidth, chunkHeight);
+                Rect chunk = new Rect(x, y, chunkWidth, chunkHeight);
 
-                imageSegments.submit( new ImageSegmentWorker(scene, view, camera, renderTarget, chunk, totalSamples,
+                imageSegments.submit(new ImageSegmentWorker(scene, view, camera, renderTarget, chunk,
+                    totalSamples,
                     new GenericCallback() {
                         @Override
                         public void onComplete() {
@@ -105,7 +106,7 @@ public class RayTracer {
                             logger.debug("count: " + latch.getCount());
                             renderTarget.refresh();
                         }
-                    }) );
+                    }));
             }
         }
 

@@ -17,8 +17,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.mattbolt.javaray.render;
+package com.mattbolt.javaray.render.targets;
 
+import com.mattbolt.javaray.materials.RayColor;
+import com.mattbolt.javaray.render.blit.GraphicsPixelRenderer;
+import com.mattbolt.javaray.render.GraphicsWorker;
+import com.mattbolt.javaray.render.blit.Pixel;
+import com.mattbolt.javaray.render.RenderTarget;
+import com.mattbolt.javaray.render.RenderWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +32,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is used as a wrapper for PNG ImageIO. It simply exposes a simple pixel writing method and an image
@@ -41,16 +45,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ImageTarget implements RenderTarget {
     private static final Logger logger = LoggerFactory.getLogger(ImageTarget.class);
 
-    private final LinkedBlockingQueue<Pixel> pixels = new LinkedBlockingQueue<Pixel>();
-    private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final BufferedImage bi;
     private final ImageType imageType;
+    private final RenderWorker renderWorker;
     private final File file;
 
     private final int width;
     private final int height;
-
-    private final Thread consumer;
 
     public ImageTarget(String fileName, ImageType imageType, int width, int height) {
         this.file = new File(fileName + "." + imageType.getType().toLowerCase());
@@ -59,19 +60,17 @@ public class ImageTarget implements RenderTarget {
         this.height = height;
 
         this.bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        GraphicsPixelRenderer pixelRenderer = new GraphicsPixelRenderer(bi.createGraphics());
-
-        consumer = new Thread(new GraphicsWorker(pixels, accepting, pixelRenderer));
+        renderWorker = new GraphicsWorker(new GraphicsPixelRenderer(bi.createGraphics()));
     }
 
     @Override
     public void setPixelAt(int x, int y, RayColor color) {
-        pixels.add(new Pixel(x, height - y, color));
+        renderWorker.pushPixel(new Pixel(x, height - y, color));
     }
 
     @Override
-    public void start() {
-        consumer.start();    
+    public void init() {
+        renderWorker.start();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class ImageTarget implements RenderTarget {
     
     @Override
     public void complete() {
-        accepting.set(false);
+        renderWorker.complete();
 
         try {
             if (file.exists()) {
@@ -90,7 +89,6 @@ public class ImageTarget implements RenderTarget {
 
             ImageIO.write(bi, imageType.getType(), file);
 
-            consumer.interrupt();
         } catch (IOException e) {
             logger.error("Failed to create PNG image.");
         }
