@@ -80,6 +80,11 @@ public class SphereGeometry implements Geometry {
     }
 
     @Override
+    public boolean isCollidable(Ray ray) {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

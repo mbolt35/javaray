@@ -26,7 +26,7 @@ import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
 
 /**
- *
+ * This class represents a light source
  */
 public class Light extends Sphere implements SceneObject {
 

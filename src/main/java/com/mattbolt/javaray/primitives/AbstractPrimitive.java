@@ -57,6 +57,10 @@ public abstract class AbstractPrimitive {
         return emissivity.getRed() > 0 || emissivity.getGreen() > 0 || emissivity.getBlue() > 0;
     }
 
+    public boolean isVisible() {
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -109,6 +109,11 @@ public class Plane extends AbstractPrimitive implements SceneObject {
         }
 
         @Override
+        public boolean isCollidable(Ray ray) {
+            return true;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) {
                 return true;

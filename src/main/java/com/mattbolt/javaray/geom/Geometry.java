@@ -30,17 +30,29 @@ public interface Geometry {
     /**
      * This method detects a hit from the ray.
      *
-     * @param ray
+     * @param ray The {@link Ray} to test for a hit.
      *
-     * @return
+     * @return The {@link HitResult} of the test.
      */
     HitResult hits(Ray ray);
 
     /**
-     * This method finds
-     * @param
+     * This method finds the {@code Vector3} normal to the object.
+     *
+     * @param point The {@code Vector3} to find the normal to.
+     *
+     * @return The normal for the point provided.
      */
     Vector3 normalTo(Vector3 point);
+
+    /**
+     * This method determines whether or not it is appropriate to check for a collision or not.
+     *
+     * @param ray The {@link Ray} used to determine whether or not the object is collidable.
+     *
+     * @return {@code true} if the object is collidable.
+     */
+    boolean isCollidable(Ray ray);
 
     /**
      * This class is used to represent a hit result.

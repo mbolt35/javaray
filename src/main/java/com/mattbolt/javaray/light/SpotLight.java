@@ -27,7 +27,6 @@ import com.mattbolt.javaray.primitives.AbstractPrimitive;
 import com.mattbolt.javaray.primitives.SceneObject;
 import com.mattbolt.javaray.render.ColorMagnitude;
 import com.mattbolt.javaray.render.Material;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +55,18 @@ public class SpotLight extends AbstractPrimitive implements SceneObject {
         return geometry;
     }
 
+    @Override
+    public boolean isVisible() {
+        return false;
+    }
+
     /**
      * spotlight geometry
      */
     private static class SpotGeometry extends SphereGeometry implements Geometry {
         private final Vector3 position;
         private final Vector3 target;
+        private final Vector3 lightDirection;
         private final double theta;
 
         private SpotGeometry(Vector3 position, Vector3 target, double radius, double theta) {
@@ -69,24 +74,18 @@ public class SpotLight extends AbstractPrimitive implements SceneObject {
 
             this.position = new Vector3(position);
             this.target = new Vector3(target);
-            this.theta = theta;
+            this.lightDirection = Vector3.subtract(position, target);
+            this.theta = Math.cos(Math.PI * (theta / 180.0));
+
+            lightDirection.normalize();
         }
 
         @Override
-        public HitResult hits(Ray ray) {
-            Vector3 difference = Vector3.subtract(position, ray.getPosition());
-            Vector3 direction = Vector3.subtract(position, target);
-            difference.normalize();
-            direction.normalize();
-            
-            double angle = Vector3.dotProduct(difference, direction);
-            //logger.debug("angle: {}", angle);
-            
-            if (angle < theta) {
-                return new HitResult(-1, null);
-            }
+        public boolean isCollidable(Ray ray) {
+            double angle = Vector3.dotProduct(ray.getDirection(), lightDirection);
+            // logger.debug("angle: {}", angle);
 
-            return super.hits(ray);
+            return angle > theta;
         }
 
         @Override

@@ -63,7 +63,7 @@ public class JavaRay {
             .toString());
 
         Camera camera = new Camera(new Vector3(4, 3, 3));
-        Scene scene = getSceneTwo(configuration);
+        Scene scene = getSceneThree(configuration);
 
         long t = new Date().getTime();
 
@@ -72,7 +72,7 @@ public class JavaRay {
         final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(), view.getHeight());
         final WindowTarget window = new WindowTarget(1900, 0, view.getWidth(), view.getHeight());
 
-        new RayTracer(configuration).render(scene, view, camera, window);
+        new RayTracer(configuration).render(scene, view, camera, image);
 
         long totalTime = ((new Date().getTime() - t) / 1000);
         logger.debug("Complete! Took: " + totalTime + "seconds");
@@ -122,16 +122,16 @@ public class JavaRay {
         //scene.add( new Light(new Vector3(4, 16, -3), 12, 1) );
 
         // SpotLights
-        scene.add( new SpotLight(new Vector3(4, 4, 3), new Vector3(4, 0, -7), new ColorMagnitude(0, 10, 0), 1, 20.0) );
-        scene.add( new SpotLight(new Vector3(0, 4, 2), new Vector3(4, 0, -7), new ColorMagnitude(10, 0, 0), 1, 20.0) );
-        scene.add( new SpotLight(new Vector3(8, 4, 2), new Vector3(4, 0, -7), new ColorMagnitude(0, 0, 10), 1, 20.0) );
+        scene.add( new SpotLight(new Vector3(4, 4, 3), new Vector3(4, 0, -4), new ColorMagnitude(0, 32, 0), 1, 25.0) );
+        scene.add( new SpotLight(new Vector3(0, 4, 2), new Vector3(4, 0, -4), new ColorMagnitude(32, 0, 0), 1, 25.0) );
+        scene.add( new SpotLight(new Vector3(8, 4, 2), new Vector3(4, 0, -4), new ColorMagnitude(0, 0, 32), 1, 25.0) );
 
         // Planes
-        scene.add( new Plane(new Vector3(0, 0, -28), new Vector3(0, 0, 1), newMat(2, 2, 2, 3.2, 3.2, 3.2, 0, 0, 0)) );
+        scene.add( new Plane(new Vector3(0, 0, -20), new Vector3(0, 0, 1), newMat(2, 2, 2, 3.2, 3.2, 3.2, 0, 0, 0)) );
         scene.add( new Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0), newMat(2, 2, 2, 3.2, 3.2, 3.2, 0, 0, 0)) );
 
         // Spheres
-        //scene.add( new Sphere(new Vector3(4, 3, -3), newMat(0, 0, 0, 5, 5, 5, 1, 1, 1), 2.0) );
+        scene.add( new Sphere(new Vector3(4, 4, -4), newMat(0, 0, 0, 5, 5, 5, 1, 1, 1), 3.0) );
 
         return scene;
     }

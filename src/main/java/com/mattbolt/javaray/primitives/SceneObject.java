@@ -52,4 +52,11 @@ public interface SceneObject {
      */
     boolean isEmittingLight();
 
+    /**
+     * This method returns {@code true} if the object is visible in the scene and/or relfections.
+     *
+     * @return {@code true} if the object is visible.
+     */
+    boolean isVisible();
+
 }

@@ -122,7 +122,7 @@ public class ImageSegmentWorker implements Runnable {
         Ray ray = new Ray(viewPoint, direction);
 
         for (SceneObject object : objects) {
-            if (!object.equals(lastHit)) {
+            if (!object.equals(lastHit) && object.isVisible()) {
                 Geometry objectGeometry = object.getGeometry();
                 Geometry.HitResult result = objectGeometry.hits(ray);
                 Vector3 hitPoint = result.getHitPoint();
@@ -237,6 +237,10 @@ public class ImageSegmentWorker implements Runnable {
         difference.normalize();
 
         Ray ray = new Ray(hitPoint, difference);
+
+        if (!lightSource.getGeometry().isCollidable(ray)) {
+            return false;
+        }
 
         for (SceneObject object : objects) {
             if (!object.equals(hitObject) && !object.equals(lightSource)) {
