@@ -24,9 +24,6 @@ import com.mattbolt.javaray.geom.SphereGeometry;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.materials.Material;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * This class represents a sphere model in the scene.
@@ -34,8 +31,6 @@ import org.slf4j.LoggerFactory;
  * @author Matt Bolt, mbolt35@gmail.com
  */
 public class Sphere extends AbstractPrimitive implements SceneObject {
-    private static final Logger logger = LoggerFactory.getLogger(Sphere.class);
-
     private final Geometry geometry;
 
     public Sphere(Vector3 position, Material material, double radius) {

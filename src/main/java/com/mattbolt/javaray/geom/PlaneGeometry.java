@@ -20,41 +20,38 @@
 package com.mattbolt.javaray.geom;
 
 /**
- * This class is used to represent a sphere geometrically.
+* This class is used to represent the {@link Geometry} for a {@link com.mattbolt.javaray.primitives.Plane}.
  *
  * @author Matt Bolt, mbolt35@gmail.com
- */
-public class SphereGeometry implements Geometry {
+*/
+public class PlaneGeometry implements Geometry {
     private final Vector3 position;
-    private final double radiusSquared;
+    private final Vector3 planeNormal;
 
-    public SphereGeometry(Vector3 position, double radius) {
-        this.position = new Vector3(position);
-        this.radiusSquared = Math.pow(radius, 2.0);
+    public PlaneGeometry(Vector3 position, Vector3 planeNormal) {
+        this.position = position;
+        this.planeNormal = planeNormal;
     }
 
     @Override
     public HitResult hits(Ray ray) {
+        Vector3 rayPosition = ray.getPosition();
         Vector3 direction = ray.getDirection();
         direction.normalize();
 
-        Vector3 start = Vector3.subtract(ray.getPosition(), position);
+        double a = Vector3.dotProduct(planeNormal, position);
+        double b = a - Vector3.dotProduct(planeNormal, rayPosition);
+        double c = Vector3.dotProduct(planeNormal, direction);
 
-        double a = Vector3.dotProduct(direction, direction);
-        double b = Vector3.dotProduct(direction, start) * 2.0;
-        double c = Vector3.dotProduct(start, start) - radiusSquared;
+        if (c == 0) {
+            return new HitResult(-1, null);
+        }
 
-        double disc = Math.pow(b, 2.0) - (4.0 * a * c);
+        double t = b / c;
 
-        if (disc > 0) {
-            double sqrtDisc = Math.sqrt(disc);
-            double t = Math.min(
-                (-b - sqrtDisc) / (2.0 * a),
-                (-b + sqrtDisc) / (2.0 * a));
-
-            Vector3 hitLocation = hitsSphere(ray.getPosition(), direction, t);
-
-            if (hitLocation.getZ() > 0 && ray.getPosition().getZ() > 0) {
+        if (t > rayPosition.getZ()) {
+            Vector3 hitLocation = hitPoint(rayPosition, direction, t);
+            if (hitLocation.getZ() > 0) {
                 return HitResult.MISS;
             }
 
@@ -64,19 +61,16 @@ public class SphereGeometry implements Geometry {
         return HitResult.MISS;
     }
 
-    private Vector3 hitsSphere(Vector3 base, Vector3 direction, double t) {
-        Vector3 d = new Vector3(direction);
-        d.normalize();
-        d.scale(t);
+    private Vector3 hitPoint(Vector3 base, Vector3 direction, double t) {
+        Vector3 scaledDirection = new Vector3(direction);
+        scaledDirection.scale(t);
 
-        return Vector3.add(base, d);
+        return Vector3.add(base, scaledDirection);
     }
 
     @Override
     public Vector3 normalTo(Vector3 point) {
-        Vector3 normal = Vector3.subtract(point, position);
-        normal.normalize();
-        return normal;
+        return planeNormal;
     }
 
     @Override
@@ -89,24 +83,22 @@ public class SphereGeometry implements Geometry {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof SphereGeometry)) {
+
+        if (!(o instanceof PlaneGeometry)) {
             return false;
         }
 
-        SphereGeometry that = (SphereGeometry) o;
+        PlaneGeometry that = (PlaneGeometry) o;
 
-        return Double.compare(that.radiusSquared, radiusSquared) == 0
+        return !(planeNormal != null ? !planeNormal.equals(that.planeNormal) : that.planeNormal != null)
             && !(position != null ? !position.equals(that.position) : that.position != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = position != null ? position.hashCode() : 0;
-        temp = radiusSquared != +0.0d ? Double.doubleToLongBits(radiusSquared) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        int result = position != null ? position.hashCode() : 0;
+        result = 31 * result + (planeNormal != null ? planeNormal.hashCode() : 0);
         return result;
     }
 }

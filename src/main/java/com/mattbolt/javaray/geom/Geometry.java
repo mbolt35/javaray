@@ -58,6 +58,8 @@ public interface Geometry {
      * This class is used to represent a hit result.
      */
     final class HitResult {
+        public static final HitResult MISS = new HitResult(-1, null);
+
         private final double t;
         private final Vector3 hitPoint;
 

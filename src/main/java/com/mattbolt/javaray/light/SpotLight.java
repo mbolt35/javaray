@@ -20,24 +20,20 @@
 package com.mattbolt.javaray.light;
 
 import com.mattbolt.javaray.geom.Geometry;
-import com.mattbolt.javaray.geom.Ray;
-import com.mattbolt.javaray.geom.SphereGeometry;
+import com.mattbolt.javaray.geom.SpotGeometry;
 import com.mattbolt.javaray.geom.Vector3;
 import com.mattbolt.javaray.materials.ColorMagnitude;
 import com.mattbolt.javaray.materials.Material;
 import com.mattbolt.javaray.primitives.AbstractPrimitive;
 import com.mattbolt.javaray.primitives.SceneObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
+ * This class represents an {@code ARGB} spot light which only emits light particles at a specific {@code theta} angle.
  *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class SpotLight extends AbstractPrimitive implements SceneObject {
-
-    private static final Logger logger = LoggerFactory.getLogger(SpotLight.class);
-
     private final Geometry geometry;
 
     public SpotLight(Vector3 position, Vector3 target, double intensity, double radius, double theta) {
@@ -60,33 +56,4 @@ public class SpotLight extends AbstractPrimitive implements SceneObject {
         return false;
     }
 
-    /**
-     * spotlight geometry
-     */
-    private static class SpotGeometry extends SphereGeometry implements Geometry {
-        private final Vector3 lightDirection;
-        private final double theta;
-
-        private SpotGeometry(Vector3 position, Vector3 target, double radius, double theta) {
-            super(position, radius);
-
-            this.lightDirection = Vector3.subtract(position, target);
-            this.theta = Math.cos(Math.toRadians(theta));
-
-            lightDirection.normalize();
-        }
-
-        @Override
-        public boolean isCollidable(Ray ray) {
-            double angle = Vector3.dotProduct(ray.getDirection(), lightDirection);
-            // logger.debug("angle: {}", angle);
-
-            return angle > theta;
-        }
-
-        @Override
-        public Vector3 normalTo(Vector3 point) {
-            return super.normalTo(point);
-        }
-    }
 }

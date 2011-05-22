@@ -27,7 +27,9 @@ import com.mattbolt.javaray.primitives.Sphere;
 
 
 /**
- * This class represents a light source
+ * This class represents a single white-light source.
+ *
+ * @author Matt Bolt, mbolt35@gmail.com
  */
 public class Light extends Sphere implements SceneObject {
 

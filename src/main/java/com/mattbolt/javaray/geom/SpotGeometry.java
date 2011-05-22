@@ -20,29 +20,37 @@
 package com.mattbolt.javaray.geom;
 
 /**
- * This class specifies a region of the entire scene to render.
+ * This {@link Geometry} implementation only allows a specific angle'd {@link Ray} to collide with it.
  *
  * @author Matt Bolt, mbolt35@gmail.com
  */
-public class Rect {
+public class SpotGeometry extends SphereGeometry implements Geometry {
+    private final Vector3 lightDirection;
+    private final double theta;
 
-    public int x;
-    public int y;
-    public int width;
-    public int height;
+    public SpotGeometry(Vector3 position, Vector3 target, double radius, double theta) {
+        super(position, radius);
 
-    public Rect() {
-    	this(0, 0, 0, 0);
+        this.lightDirection = Vector3.subtract(position, target);
+        this.theta = Math.cos(Math.toRadians(theta));
+
+        lightDirection.normalize();
     }
 
-    public Rect(Rect r) {
-    	this(r.x, r.y, r.width, r.height);
+    @Override
+    public boolean isCollidable(Ray ray) {
+        double angle = Vector3.dotProduct(ray.getDirection(), lightDirection);
+
+        return angle > theta;
     }
 
-    public Rect(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    @Override
+    public HitResult hits(Ray ray) {
+        return super.hits(ray);
+    }
+    
+    @Override
+    public Vector3 normalTo(Vector3 point) {
+        return super.normalTo(point);
     }
 }
