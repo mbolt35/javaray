@@ -57,22 +57,20 @@ public class JavaRay {
 
         View view = new View(configuration);
 
-        logger.debug(new StringBuilder("Configuration: [View: ")
-            .append(configuration.getViewWidth()).append("x").append(configuration.getViewHeight())
-            .append("], [Anti-Alias: ").append(configuration.getAntiAlias()).append("]")
-            .toString());
+        logger.debug("Configuration: [View: " +
+                configuration.getViewWidth() + "x" + configuration.getViewHeight() +
+                "], [Anti-Alias: " + configuration.getAntiAlias() + "]");
 
         Camera camera = new Camera(new Vector3(4, 3, 3));
         Scene scene = getSceneThree(configuration);
 
         long t = new Date().getTime();
 
-        //new RayTracer(configuration).synchronousRender(scene, view, camera);
-
         final ImageTarget image = new ImageTarget("test", ImageTarget.ImageType.PNG, view.getWidth(), view.getHeight());
-        final WindowTarget window = new WindowTarget(1900, 0, view.getWidth(), view.getHeight());
+        final WindowTarget window = new WindowTarget(0, 0, view.getWidth(), view.getHeight());
 
         new RayTracer(configuration).render(scene, view, camera, window);
+        //new RayTracer(configuration).synchronousRender(scene, view, camera, window);
 
         long totalTime = ((new Date().getTime() - t) / 1000);
         logger.debug("Complete! Took: " + totalTime + "seconds");
